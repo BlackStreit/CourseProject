@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.canvas.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<Pane prefHeight="800.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Constroller.Controller">
+   <children>
+      <Canvas fx:id="mainCanvas" height="800.0" width="800.0" />
+      <Button fx:id="btnT1" layoutX="800.0" layoutY="240.0" mnemonicParsing="false" onAction="#btnAddTower" prefHeight="95.0" prefWidth="200.0" text="T1" />
+      <Button fx:id="btnT2" layoutX="800.0" layoutY="354.0" mnemonicParsing="false" onAction="#btnAddTower" prefHeight="95.0" prefWidth="200.0" text="T2" />
+      <Button fx:id="btnT3" layoutX="800.0" layoutY="477.0" mnemonicParsing="false" onAction="#btnAddTower" prefHeight="95.0" prefWidth="200.0" text="T3" />
+      <Button fx:id="btnT4" layoutX="800.0" layoutY="586.0" mnemonicParsing="false" onAction="#btnAddTower" prefHeight="95.0" prefWidth="200.0" text="T4" />
+      <Button fx:id="btnDeleteTower" layoutX="800.0" layoutY="710.0" mnemonicParsing="false" onAction="#btnDeleteClick" prefHeight="34.0" prefWidth="200.0" text="Удалить башню" />
+      <Label fx:id="lblError" layoutX="835.0" layoutY="51.0" onMouseEntered="#lblOnMouseEntered" onMouseExited="#lblOnMouseExited" prefHeight="139.0" prefWidth="130.0" textAlignment="RIGHT" />
+   </children>
+</Pane>
