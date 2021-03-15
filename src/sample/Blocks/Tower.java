@@ -16,10 +16,22 @@ public class Tower extends LiveBlock {
     public int power = 25;
     public Color color = Color.WHITE;
 
+
+    public int getNumber() {
+        return number;
+    }
+
+    public void setNumber(int number) {
+        this.number = number;
+    }
+
+    public int number;
+
     Consumer<Enemy> onEnemyDestroy = null;
-    public Tower(double x, double y, ArrayList<Block> blocks, Consumer<Enemy> onEnemyDestroy) {
+    public Tower(double x, double y, ArrayList<Block> blocks, Consumer<Enemy> onEnemyDestroy, int number) {
         super(x, y);
         this.blocks = blocks;
+        this.number = number;
         setMaxLife(100);
         this.onEnemyDestroy = onEnemyDestroy;
     }

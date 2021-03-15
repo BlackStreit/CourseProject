@@ -90,6 +90,30 @@ public class Controller implements Initializable {
     private void initBlocks() { //Инициализировать блоки
         starBase = new StarBase(mainCanvas.getWidth() / 2, mainCanvas.getHeight() / 2); //Добавить базу на форму
         blocks.add(starBase); //Добавить в список
+        //Верхняя часть
+        blocks.add(new TowerPosition(100,40, 0));
+        blocks.add(new TowerPosition(300,40, 1));
+        blocks.add(new TowerPosition(500,40, 2));
+        blocks.add(new TowerPosition(700,40, 3));
+        //Правая часть
+        blocks.add(new TowerPosition(700,250, 4));
+        blocks.add(new TowerPosition(700,460, 5));
+        blocks.add(new TowerPosition(700,670, 6));
+        //Нижняя часть
+        blocks.add(new TowerPosition(130,670, 9));
+        blocks.add(new TowerPosition(320,670, 8));
+        blocks.add(new TowerPosition(510,670, 7));
+        //Левая часть
+        blocks.add(new TowerPosition(130,500, 10));
+        blocks.add(new TowerPosition(130,330, 11));
+        blocks.add(new TowerPosition(130,160, 12));
+        //Верх второй уровень
+        blocks.add(new TowerPosition(350,160, 13));
+        blocks.add(new TowerPosition(570,160, 14));
+        //Финальаня часть
+        blocks.add(new TowerPosition(mainCanvas.getWidth() / 2 - 100, mainCanvas.getHeight() / 2 - 100, 15));
+        blocks.add(new Path());
+
     }
 
     private void onEnemyDestroy(Enemy enemy) {
@@ -112,7 +136,6 @@ public class Controller implements Initializable {
         GraphicsContext graphicsContext2D = mainCanvas.getGraphicsContext2D(); //С помощью этого мы рисуем
         graphicsContext2D.setFill(Color.BLACK); //Залить задник
         graphicsContext2D.fillRect(0 , 0, mainCanvas.getWidth(), mainCanvas.getHeight()); //нарсовать прямоугольник
-
         for (Block block : blocks) {
             block.Render(graphicsContext2D); //Рисуем блоки
             graphicsContext2D.setLineWidth(1);
@@ -166,12 +189,12 @@ public class Controller implements Initializable {
         Integer totalEnemyPower = blocks.stream().filter(block -> block instanceof Enemy).
                 map(enemy -> (Enemy) enemy).
                 map(enemy -> enemy.maxLife).
-                reduce(0, (sum, life) -> sum + life);
+                reduce(0, Integer::sum);
         Double totalPower = blocks.stream()
                 .filter(block -> block instanceof Tower)
                 .map(block -> (Tower)block)
                 .map(tower -> (1d / tower.fireRate) * tower.power)
-                .reduce(0d, ((aDouble, aDouble2) -> aDouble + aDouble2));
+                .reduce(0d, (Double::sum));
 
         if(totalEnemyPower >= totalPower){
             return;
@@ -194,7 +217,7 @@ public class Controller implements Initializable {
         }
         else if(diractions >= 180 && diractions < 270){ //Левый край
             x = 0;
-            y = ThreadLocalRandom.current().nextInt(0, (int) mainCanvas.getHeight());;
+            y = ThreadLocalRandom.current().nextInt(0, (int) mainCanvas.getHeight());
         }
         else if(diractions >= 270 && diractions < 360){ //Левый край
             x = ThreadLocalRandom.current().nextInt(0, (int) mainCanvas.getWidth());
@@ -214,38 +237,43 @@ public class Controller implements Initializable {
             lblError.setText("Недостаточно денег");
             return;
         }
-        var towers = blocks.stream().filter(tower -> tower instanceof Tower)
-                .map(tower -> (Tower) tower)
+        System.out.println(mouseX + "<-X, Y->" + mouseY);
+        var positions = blocks.stream().filter(position -> position instanceof TowerPosition)
+                .map(position -> (TowerPosition) position)
                 .collect(Collectors.toList());
-        for (var tower : towers) {
-            double gX = tower.x - mouseX;
-            double gY = tower.y - mouseY;
-            double length = Math.sqrt(gX * gX + gY * gY);
-            if (tower.radius / 1.5 > length) {
-                lblError.setText("Вы не можете установить башню на это место");
+        for (var position : positions) {
+            if((mouseY >= position.y && mouseY <= position.y + 20) && (mouseX >= position.x&&mouseX <= position.x + 20)) {
+                System.out.println("Установка");
+                if (position.isFreedoom()) {
+                    money -= cost;
+                    Tower tower = new Tower(
+                            position.x + 10,
+                            position.y + 10,
+                            blocks,
+                            this::onEnemyDestroy,
+                            position.getNumber());
+                    tower.fireRate = fireRate;
+                    tower.radius = radius;
+                    tower.power = damage;
+                    tower.color = color;
+                    blocks.add(tower);
+                    btn.setStyle(getDefaultBTNStyle());
+                    isBTNClicked = false;
+                    btnDeleteTower.setDisable(false);
+                    position.setFreedoom(false);
+                    return;
+                }
+                lblError.setText("Площадка уже занята. Выберите другую");
                 return;
             }
         }
-        money -= cost;
-        Tower tower = new Tower(
-                mouseX,
-                mouseY,
-                blocks,
-                this::onEnemyDestroy);
-        tower.fireRate = fireRate;
-        tower.radius = radius;
-        tower.power = damage;
-        tower.color = color;
-        blocks.add(tower);
-        btn.setStyle(getDefaultBTNStyle());
-        isBTNClicked = false;
-        btnDeleteTower.setDisable(false);
+        lblError.setText("Вы не выбрали площадку, повторите попытку");
     }
 
     public void btnAddTower(ActionEvent actionEvent) {
         Button btn = (Button)actionEvent.getTarget();
         lblError.setText("");
-        if(!isActionsBtn(btn)){
+        if(isActionsBtn(btn)){
             return;
         }
         isBTNClicked = true;
@@ -288,15 +316,13 @@ public class Controller implements Initializable {
     }
 
     public void btnDeleteClick(ActionEvent actionEvent) {
-        if (!isActionsBtn((Button)actionEvent.getTarget())){
+        if (isActionsBtn((Button) actionEvent.getTarget())){
             return;
         }
         System.out.println(((Button) actionEvent.getTarget()).getId());
         isBTNClicked = true;
         btnDeleteTower.setStyle(getClickedBTNStyle());
-        mainCanvas.setOnMousePressed(mouseEvent -> {
-            deleteTower(mouseEvent.getX(), mouseEvent.getY(), btnDeleteTower);
-        });
+        mainCanvas.setOnMousePressed(mouseEvent -> deleteTower(mouseEvent.getX(), mouseEvent.getY(), btnDeleteTower));
     }
     void deleteTower(double x, double y, Button btn){
         if(!isBTNClicked){
@@ -312,12 +338,15 @@ public class Controller implements Initializable {
             double gY = tower.y - y;
             double length = Math.sqrt(gX * gX + gY * gY);
             if(tower.radius / 6 > length){
-                isDelete = true;
-                money += tower.power * 3;
+                var positions = blocks.stream()
+                        .filter(pos -> pos instanceof TowerPosition)
+                        .map(pos -> (TowerPosition)pos)
+                        .filter(pos -> pos.getNumber()==tower.getNumber())
+                        .collect(Collectors.toList());
+                System.out.println(positions.size());
+                positions.get(0).setFreedoom(true);
                 blocks.remove(tower);
-                isBTNClicked = false;
-                lblError.setText("");
-                break;
+                isDelete = true;
             }
         }
         if(!isDelete) {
@@ -345,7 +374,7 @@ public class Controller implements Initializable {
             lblError.setText("");
             lblError.setText("У вас нет башен");
             btnDeleteTower.setDisable(true);
-            return false;
+            return true;
         }
         for (var button: buttonArrayList) {
             if(!button.equals(btn)){
@@ -356,6 +385,6 @@ public class Controller implements Initializable {
                 btn.setStyle(getDefaultBTNStyle());
             }
         }
-        return true;
+        return false;
     }
 }
