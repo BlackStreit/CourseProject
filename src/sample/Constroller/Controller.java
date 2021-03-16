@@ -17,11 +17,8 @@ import sample.Blocks.*;
 
 import java.net.URL;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
+import java.util.*;
+import java.util.stream.*;
 
 //Этот интерфейс отвечает за отрисовку
 public class Controller implements Initializable {
@@ -40,9 +37,9 @@ public class Controller implements Initializable {
     //Это класс, отвечающий за время
     Instant lastUpdate = null;
     double timeForLastEnemyCreate = 0;
-    double enemyCreateLate = 1;
+    double enemyCreateLate = 0.5;
     int score = 0;
-    double money = 50000;
+    double money = 500;
 
     ArrayList<Button> buttonArrayList = new ArrayList<>();
     @Override
@@ -176,7 +173,13 @@ public class Controller implements Initializable {
     }
 
     private void generateEnemies(double delta) {
-
+        var towers = blocks.stream()
+                .filter(tower -> tower instanceof Tower)
+                .map(tower -> (Tower)tower)
+                .collect(Collectors.toList());
+        if(towers.size() == 0){
+            return;
+        }
         if(starBase.life <= 0){ //Если база мертва
             return;
         }
@@ -195,37 +198,30 @@ public class Controller implements Initializable {
                 .map(block -> (Tower)block)
                 .map(tower -> (1d / tower.fireRate) * tower.power)
                 .reduce(0d, (Double::sum));
-
-        if(totalEnemyPower >= totalPower){
+        int enemyCreateCount = new Random().nextInt(1000);
+        if(totalEnemyPower >= totalPower && enemyCreateCount > 20){
+            System.out.println("Не могу создать " + enemyCreateCount);
             return;
         }
-
-        int enemyMaxLife = (int)(totalPower - totalEnemyPower);
+        int enemyMaxLife = ((int)(totalPower - totalEnemyPower));
+        if(enemyMaxLife <= 0){
+            int max = 0;
+            var enemies = blocks.stream()
+                    .filter(enemy -> enemy instanceof Enemy)
+                    .map(enemy -> (Enemy)enemy)
+                    .collect(Collectors.toList());
+            for (var enemy:enemies){
+                if(enemy.maxLife>max){
+                    max = enemy.maxLife;
+                }
+            }
+            enemyMaxLife = max;
+        }
         timeForLastEnemyCreate = 0;
-        int diractions = ThreadLocalRandom.current().nextInt(0, 360); //Как рандом, только большк
-
-        double x = 0;
-        double y = 0;
-
-        if(diractions >= 0 && diractions < 90){ //Если в правой стороне
-            x = mainCanvas.getWidth();
-            y = ThreadLocalRandom.current().nextInt(0, (int) mainCanvas.getHeight());
-        }
-        else if(diractions >= 90 && diractions < 180){ //Вверху экрана
-            x =  ThreadLocalRandom.current().nextInt(0, (int) mainCanvas.getWidth());
-            y = 0;
-        }
-        else if(diractions >= 180 && diractions < 270){ //Левый край
-            x = 0;
-            y = ThreadLocalRandom.current().nextInt(0, (int) mainCanvas.getHeight());
-        }
-        else if(diractions >= 270 && diractions < 360){ //Левый край
-            x = ThreadLocalRandom.current().nextInt(0, (int) mainCanvas.getWidth());
-            y = mainCanvas.getHeight();
-        }
-        Enemy enemy = new Enemy(x, y, starBase);
+        Enemy enemy = new Enemy(1, 120, starBase);
         enemy.setMaxLife(enemyMaxLife);
         blocks.add(enemy);
+        System.out.println("Создаю врага");
     }
 
     public void addTower(int cost, int damage, double fireRate, int radius, Color color, Button btn) {

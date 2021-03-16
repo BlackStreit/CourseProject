@@ -5,6 +5,15 @@ import javafx.scene.paint.Color;
 
 public class Path extends Block {
     private double[] arrayX;
+
+    public double[] getArrayX() {
+        return arrayX;
+    }
+
+    public double[] getArrayY() {
+        return arrayY;
+    }
+
     private double[] arrayY;
     public Path() {
         super(0, 0);
