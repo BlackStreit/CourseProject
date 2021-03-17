@@ -1,19 +1,23 @@
 package sample.Constroller;
-
+//TODO 1)реализовать обратный буст у врагов
+//TODO 2)Отсортировать список игроков
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 import sample.Blocks.*;
+import sample.Player.Player;
+import sample.Player.PlayerBD;
 
 import java.net.URL;
 import java.time.Instant;
@@ -22,26 +26,48 @@ import java.util.stream.*;
 
 //Этот интерфейс отвечает за отрисовку
 public class Controller implements Initializable {
-    public Canvas mainCanvas;
+    public double mouseX;
+    public double mouseY;
+    //Элементы управления
     public Button btnT1;
     public Button btnT2;
     public Button btnT3;
     public Button btnT4;
-    public double mouseX;
-    public double mouseY;
     public Button btnDeleteTower;
+    public Canvas mainCanvas;
     public Label lblError;
+    public AnchorPane pnlStart;
+    public Button bntStart;
+    public TextField txfName;
+    public TableView<Player> tblLeaderBoard;
+    public TableColumn<String, Player> ColumnPlayer;
+    public TableColumn<Integer, Player> ColumnScore;
+    public Button btnExit;
+    public Button btnRePlay;
+    public AnchorPane paneGameOver;
+
     boolean isBTNClicked;
+
+    //Играем ли
+    boolean isPlay = false;
     ArrayList<Block> blocks = new ArrayList<>();
+    PlayerBD playerBD = new PlayerBD();
+    Player player;
     StarBase starBase;
     //Это класс, отвечающий за время
-    Instant lastUpdate = null;
+
+    int lifeBust = 1;
+    boolean isFirstBust = false;
+
     double timeForLastEnemyCreate = 0;
     double enemyCreateLate = 0.5;
     int score = 0;
-    double money = 500;
+    double money = 50000;
 
     ArrayList<Button> buttonArrayList = new ArrayList<>();
+    private Instant lastUpdate = null;
+    private Instant lastDamageTime = Instant.now();
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Timeline timeline = new Timeline( //Таймер
@@ -55,9 +81,10 @@ public class Controller implements Initializable {
         lblError.setTextAlignment(TextAlignment.CENTER);
         timeline.setCycleCount(Timeline.INDEFINITE); //Время действия таймера
         timeline.play(); //Запуск таймера
-
         initBlocks();
     }
+
+
 
     private String getDefaultBTNStyle(){
         return "-fx-background-color: #F5FFFA; -fx-border-width: 1px; -fx-border-color: #000000;";
@@ -68,20 +95,18 @@ public class Controller implements Initializable {
     }
 
     private void btnSetting(){
-        btnT1.setStyle(getDefaultBTNStyle());
         btnT1.setText("Цена:500\nУрон:10\nСкорость атаки:0.1\nРадиус:100");
         buttonArrayList.add(btnT1);
-        btnT2.setStyle(getDefaultBTNStyle());
         btnT2.setText("Цена:1000\nУрон:75\nСкорость атаки:0.5\nРадиус:150");
         buttonArrayList.add(btnT2);
-        btnT3.setStyle(getDefaultBTNStyle());
         btnT3.setText("Цена:2000\nУрон:200\nСкорость атаки:0.75\nРадиус:100");
         buttonArrayList.add(btnT3);
-        btnT4.setStyle(getDefaultBTNStyle());
         btnT4.setText("Цена:5000\nУрон:500\nСкорость атаки:1.0\nРадиус:200");
         buttonArrayList.add(btnT4);
-        btnDeleteTower.setStyle(getDefaultBTNStyle());
         buttonArrayList.add(btnDeleteTower);
+        for (var button: buttonArrayList) {
+            button.setStyle(getDefaultBTNStyle());
+        }
     }
 
     private void initBlocks() { //Инициализировать блоки
@@ -120,13 +145,40 @@ public class Controller implements Initializable {
     }
 
     private void onTimerTick(ActionEvent actionEvent) { // Действие во время тика
-        money+=0.1;
-        btnT1.setDisable(money < 500);
-        btnT2.setDisable(money < 1000);
-        btnT3.setDisable(money < 2000);
-        btnT4.setDisable(money < 5000);
-        UpdateState();
+        if(starBase.life<=0){
+            gameOver();
+            return;
+        }
+        if(isPlay) {
+            money += 0.1;
+            btnT1.setDisable(money < 500);
+            btnT2.setDisable(money < 1000);
+            btnT3.setDisable(money < 2000);
+            btnT4.setDisable(money < 5000);
+            UpdateState();
+        }
         Render();
+    }
+
+    boolean isTableWrite = false;
+
+    private void gameOver() {
+        paneGameOver.setVisible(true);
+        isPlay = false;
+        for (var button: buttonArrayList) {
+            button.setDisable(true);
+        }
+        if(!isTableWrite) {
+            if(playerBD.getPlayers().size()>1){
+                playerBD.getPlayers().stream().sorted();
+            }
+            player.setScore(score);
+            playerBD.setPlayers(player);
+            ColumnPlayer.setCellValueFactory(new PropertyValueFactory<>("name"));
+            ColumnScore.setCellValueFactory(new PropertyValueFactory<>("score"));
+            tblLeaderBoard.setItems(playerBD.getPlayers());
+            isTableWrite = true;
+        }
     }
 
     void Render(){
@@ -151,12 +203,22 @@ public class Controller implements Initializable {
     }
 
     void UpdateState(){
+        var towers = blocks.stream()
+                .filter(tower -> tower instanceof Tower)
+                .map(tower -> (Tower)tower)
+                .collect(Collectors.toList());
         Instant now = Instant.now();
         double delta = 0;//Колво секунд с последнего обновления
         if(lastUpdate != null){
             delta = (double) java.time.Duration.between(lastUpdate, now).toMillis() / 1000;
         }
-
+        double noDamageTime = java.time.Duration.between(lastDamageTime, now).toSeconds();
+        System.out.println("Время до усиления врагов:" + (60 - noDamageTime));
+        if(noDamageTime >= 60){
+            lastDamageTime = Instant.now();
+            isFirstBust = true;
+            lifeBust += 1;
+        }
         generateEnemies(delta); //Генерация врагов
 
         for (Block block : blocks) {
@@ -180,9 +242,6 @@ public class Controller implements Initializable {
         if(towers.size() == 0){
             return;
         }
-        if(starBase.life <= 0){ //Если база мертва
-            return;
-        }
 
         if(timeForLastEnemyCreate < enemyCreateLate){
             timeForLastEnemyCreate += delta;
@@ -199,11 +258,11 @@ public class Controller implements Initializable {
                 .map(tower -> (1d / tower.fireRate) * tower.power)
                 .reduce(0d, (Double::sum));
         int enemyCreateCount = new Random().nextInt(1000);
-        if(totalEnemyPower >= totalPower && enemyCreateCount > 20){
-            System.out.println("Не могу создать " + enemyCreateCount);
+        if(totalEnemyPower >= totalPower && enemyCreateCount > 100){
             return;
         }
         int enemyMaxLife = ((int)(totalPower - totalEnemyPower));
+        System.out.println(enemyMaxLife);
         if(enemyMaxLife <= 0){
             int max = 0;
             var enemies = blocks.stream()
@@ -218,8 +277,14 @@ public class Controller implements Initializable {
             enemyMaxLife = max;
         }
         timeForLastEnemyCreate = 0;
-        Enemy enemy = new Enemy(1, 120, starBase);
-        enemy.setMaxLife(enemyMaxLife);
+        Enemy enemy = new Enemy(0, 120, starBase);
+        if(isFirstBust) {
+            enemy.setMaxLife(enemyMaxLife * lifeBust);
+            isFirstBust = false;
+        }
+        else{
+            enemy.setMaxLife(enemyMaxLife);
+        }
         blocks.add(enemy);
         System.out.println("Создаю врага");
     }
@@ -257,6 +322,7 @@ public class Controller implements Initializable {
                     isBTNClicked = false;
                     btnDeleteTower.setDisable(false);
                     position.setFreedoom(false);
+                    lastDamageTime = Instant.now();
                     return;
                 }
                 lblError.setText("Площадка уже занята. Выберите другую");
@@ -343,6 +409,7 @@ public class Controller implements Initializable {
                 positions.get(0).setFreedoom(true);
                 blocks.remove(tower);
                 isDelete = true;
+                money += tower.power * 5;
             }
         }
         if(!isDelete) {
@@ -382,5 +449,32 @@ public class Controller implements Initializable {
             }
         }
         return false;
+    }
+
+    public void bntStartClick(ActionEvent actionEvent) {
+        if(txfName.getText().equals("")){
+            lblError.setText("Для начала игры введите ваше имя");
+            return;
+        }
+        player = new Player();
+        player.setName(txfName.getText());
+        isPlay = true;
+        pnlStart.setVisible(false);
+        txfName.clear();
+    }
+
+    public void btnExitClick(ActionEvent actionEvent) {
+        System.exit(-1);
+    }
+
+    public void btnRePlayClick(ActionEvent actionEvent) {
+        pnlStart.setVisible(true);
+        paneGameOver.setVisible(false);
+        blocks.clear();
+        initBlocks();
+        btnSetting();
+        money = 500;
+        score = 0;
+        isTableWrite = false;
     }
 }

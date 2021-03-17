@@ -5,9 +5,10 @@ import javafx.scene.paint.Color;
 
 public class Enemy extends LiveBlock {
     private StarBase starBase;
-    public int speed = 60;
+    private int speed = 60;
 
-    public int power = 30;
+
+    private int power = 30;
 
     public int getRadius(){
         return (int)Math.sqrt(maxLife);
