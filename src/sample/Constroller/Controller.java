@@ -1,6 +1,7 @@
 package sample.Constroller;
 //TODO 1)реализовать обратный буст у врагов
 //TODO 2)Отсортировать список игроков
+//
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
@@ -170,7 +171,8 @@ public class Controller implements Initializable {
         }
         if(!isTableWrite) {
             if(playerBD.getPlayers().size()>1){
-                playerBD.getPlayers().stream().sorted();
+                //Тут должна быть сортировка
+                System.out.println();
             }
             player.setScore(score);
             playerBD.setPlayers(player);
@@ -399,7 +401,7 @@ public class Controller implements Initializable {
             double gX = tower.x - x;
             double gY = tower.y - y;
             double length = Math.sqrt(gX * gX + gY * gY);
-            if(tower.radius / 6 > length){
+            if((double)(tower.radius / 6) > length){
                 var positions = blocks.stream()
                         .filter(pos -> pos instanceof TowerPosition)
                         .map(pos -> (TowerPosition)pos)
