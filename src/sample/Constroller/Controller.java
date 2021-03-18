@@ -215,8 +215,8 @@ public class Controller implements Initializable {
             delta = (double) java.time.Duration.between(TimeClass.lastUpdate, now).toMillis() / 1000;
         }
         double noDamageTime = java.time.Duration.between(TimeClass.lastDamageTime, now).toSeconds();
-        System.out.println("Время до усиления врагов:" + (60 - noDamageTime));
-        if(noDamageTime >= 60){
+        System.out.println("Время до усиления врагов:" + (20 - noDamageTime));
+        if(noDamageTime >= 20){
             TimeClass.lastDamageTime = Instant.now();
             isFirstBust = true;
             BustClass.addBust();
@@ -264,6 +264,7 @@ public class Controller implements Initializable {
         if(totalEnemyPower >= totalPower && enemyCreateCount > 100){
             return;
         }
+        //TODO изменить генерацию врагов
         int enemyMaxLife = ((int)(totalPower - totalEnemyPower));
         if(enemyMaxLife <= 0){
             int max = 0;
