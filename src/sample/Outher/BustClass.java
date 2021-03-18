@@ -6,9 +6,16 @@ public class BustClass {
         lifeBust++;
     }
     public static void subBust(){
-        lifeBust--;
+        if(lifeBust>1) {
+            lifeBust--;
+        }
     }
     public static int getBust(){
         return lifeBust;
     }
+
+    public static void setLifeBust(int lifeBust) {
+        BustClass.lifeBust = lifeBust;
+    }
+
 }

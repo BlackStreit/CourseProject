@@ -4,6 +4,7 @@ package sample.Constroller;
 //
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
@@ -168,15 +169,16 @@ public class Controller implements Initializable {
             button.setDisable(true);
         }
         if(!isTableWrite) {
-            if(playerBD.getPlayers().size()>1){
-                //Сортировка
-                System.out.println();
-            }
             player.setScore(score);
             playerBD.setPlayers(player);
             ColumnPlayer.setCellValueFactory(new PropertyValueFactory<>("name"));
             ColumnScore.setCellValueFactory(new PropertyValueFactory<>("score"));
-            tblLeaderBoard.setItems(playerBD.getPlayers());
+            SortedList<Player> sortedList = new SortedList<Player>(playerBD.getPlayers());
+            //???
+            if(playerBD.getPlayers().size()>1){
+                sortedList.comparatorProperty().bind(tblLeaderBoard.comparatorProperty());
+            }
+            tblLeaderBoard.setItems(sortedList);
             isTableWrite = true;
         }
     }
@@ -460,6 +462,7 @@ public class Controller implements Initializable {
         isPlay = true;
         pnlStart.setVisible(false);
         txfName.clear();
+        BustClass.setLifeBust(3);
     }
 
     public void btnExitClick(ActionEvent actionEvent) {

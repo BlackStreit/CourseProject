@@ -47,7 +47,7 @@ public class StarBase extends LiveBlock { //Наша база
             if(delta>=5){
                 TimeClass.firstAttackTime = null;
                 isFirstArrack = true;
-                if(damage >= 70 && BustClass.getBust()>1) {
+                if(damage >= 70) {
                     BustClass.subBust();
                     TimeClass.lastDamageTime = Instant.now();
                 }
