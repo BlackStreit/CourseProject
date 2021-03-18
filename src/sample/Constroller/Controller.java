@@ -173,12 +173,7 @@ public class Controller implements Initializable {
             playerBD.setPlayers(player);
             ColumnPlayer.setCellValueFactory(new PropertyValueFactory<>("name"));
             ColumnScore.setCellValueFactory(new PropertyValueFactory<>("score"));
-            SortedList<Player> sortedList = new SortedList<Player>(playerBD.getPlayers());
-            //???
-            if(playerBD.getPlayers().size()>1){
-                sortedList.comparatorProperty().bind(tblLeaderBoard.comparatorProperty());
-            }
-            tblLeaderBoard.setItems(sortedList);
+            tblLeaderBoard.setItems(playerBD.getPlayers());
             isTableWrite = true;
         }
     }
@@ -467,6 +462,7 @@ public class Controller implements Initializable {
     }
 
     public void btnExitClick(ActionEvent actionEvent) {
+        playerBD.closeConnect();
         System.exit(-1);
     }
 

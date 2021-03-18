@@ -3,20 +3,20 @@ package sample.Player;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.sql.*;
 
 public class PlayerBD {
     private ObservableList<Player> players = FXCollections.observableArrayList();
     private Connection connection;
     public PlayerBD() {
-        String url = "jdbc:sqlserver://computer;databaseName=player";
-        String name = "sa";
-        String password = "123";
+        var map = FileWorkwer.readSQLData();
+        String url = map.get("url");
+        String name = map.get("name");
+        String password = map.get("password");
         try {
             connection = DriverManager.getConnection(url, name, password);
             System.out.println("Connect to SQL Server");
+            read();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
@@ -30,7 +30,6 @@ public class PlayerBD {
         this.players = players;
     }
     public void setPlayers(Player player) {
-
         players.add(player);
         String sql = "insert play values('"+player.getName()+"', " + player.getScore()+")";
         try {
@@ -43,13 +42,26 @@ public class PlayerBD {
             throwables.printStackTrace();
         }
     }
-    public void setPlayers(List<Player> players){
-        this.players = FXCollections.observableArrayList();
-        this.players.addAll(players);
+    public void closeConnect(){
+        try {
+            connection.close();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
     }
-    public void setPlayers(ArrayList<Player> players){
 
+    private void read(){
+        String sql = "select * from play";
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(sql);
+            while (resultSet.next()){
+                String name = resultSet.getString("name");
+                int score = resultSet.getInt("score");
+                players.add(new Player(name, score));
+            }
+        } catch (Exception throwables) {
+            throwables.printStackTrace();
+        }
     }
-
-
 }
