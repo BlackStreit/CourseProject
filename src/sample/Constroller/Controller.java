@@ -17,6 +17,8 @@ import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 import sample.Blocks.*;
+import sample.Outher.BustClass;
+import sample.Outher.TimeClass;
 import sample.Player.Player;
 import sample.Player.PlayerBD;
 
@@ -55,9 +57,7 @@ public class Controller implements Initializable {
     PlayerBD playerBD = new PlayerBD();
     Player player;
     StarBase starBase;
-    //Это класс, отвечающий за время
 
-    int lifeBust = 1;
     boolean isFirstBust = false;
 
     double timeForLastEnemyCreate = 0;
@@ -66,8 +66,6 @@ public class Controller implements Initializable {
     double money = 50000;
 
     ArrayList<Button> buttonArrayList = new ArrayList<>();
-    private Instant lastUpdate = null;
-    private Instant lastDamageTime = Instant.now();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -171,7 +169,7 @@ public class Controller implements Initializable {
         }
         if(!isTableWrite) {
             if(playerBD.getPlayers().size()>1){
-                //Тут должна быть сортировка
+                //Сортировка
                 System.out.println();
             }
             player.setScore(score);
@@ -211,16 +209,17 @@ public class Controller implements Initializable {
                 .collect(Collectors.toList());
         Instant now = Instant.now();
         double delta = 0;//Колво секунд с последнего обновления
-        if(lastUpdate != null){
-            delta = (double) java.time.Duration.between(lastUpdate, now).toMillis() / 1000;
+        if(TimeClass.lastUpdate != null){
+            delta = (double) java.time.Duration.between(TimeClass.lastUpdate, now).toMillis() / 1000;
         }
-        double noDamageTime = java.time.Duration.between(lastDamageTime, now).toSeconds();
+        double noDamageTime = java.time.Duration.between(TimeClass.lastDamageTime, now).toSeconds();
         System.out.println("Время до усиления врагов:" + (60 - noDamageTime));
         if(noDamageTime >= 60){
-            lastDamageTime = Instant.now();
+            TimeClass.lastDamageTime = Instant.now();
             isFirstBust = true;
-            lifeBust += 1;
+            BustClass.addBust();
         }
+        System.out.println("Total bust:" + BustClass.getBust());
         generateEnemies(delta); //Генерация врагов
 
         for (Block block : blocks) {
@@ -233,7 +232,7 @@ public class Controller implements Initializable {
                 filter(liveBlock -> liveBlock.life <= 0). //ВЫборка живых блоков
                 collect(Collectors.toList()); //Все что совпало в лист
         blocks.removeAll(blocksToRemove); //Удалить мертвые блоки
-        lastUpdate = now;
+        TimeClass.lastUpdate = now;
     }
 
     private void generateEnemies(double delta) {
@@ -264,7 +263,6 @@ public class Controller implements Initializable {
             return;
         }
         int enemyMaxLife = ((int)(totalPower - totalEnemyPower));
-        System.out.println(enemyMaxLife);
         if(enemyMaxLife <= 0){
             int max = 0;
             var enemies = blocks.stream()
@@ -281,10 +279,9 @@ public class Controller implements Initializable {
         timeForLastEnemyCreate = 0;
         Enemy enemy = new Enemy(0, 120, starBase);
         if(isFirstBust) {
-            enemy.setMaxLife(enemyMaxLife * lifeBust);
+            enemy.setMaxLife(enemyMaxLife * BustClass.getBust());
             isFirstBust = false;
-        }
-        else{
+        } else{
             enemy.setMaxLife(enemyMaxLife);
         }
         blocks.add(enemy);
@@ -324,7 +321,7 @@ public class Controller implements Initializable {
                     isBTNClicked = false;
                     btnDeleteTower.setDisable(false);
                     position.setFreedoom(false);
-                    lastDamageTime = Instant.now();
+                    TimeClass.lastDamageTime = Instant.now();
                     return;
                 }
                 lblError.setText("Площадка уже занята. Выберите другую");
@@ -475,7 +472,7 @@ public class Controller implements Initializable {
         blocks.clear();
         initBlocks();
         btnSetting();
-        money = 500;
+        money = 50000;
         score = 0;
         isTableWrite = false;
     }

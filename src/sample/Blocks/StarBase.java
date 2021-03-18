@@ -2,6 +2,8 @@ package sample.Blocks;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import sample.Outher.BustClass;
+import sample.Outher.TimeClass;
 
 import java.time.Instant;
 
@@ -10,8 +12,6 @@ public class StarBase extends LiveBlock { //Наша база
     private boolean isFirstArrack = true;
     public int radius = 50; //Радиус базы
     private int damage = 0;
-    private Instant lastDamageTime = null;
-    private Instant firstAttackTime;
 
     public StarBase(double x, double y) {
         super(x, y);
@@ -34,25 +34,25 @@ public class StarBase extends LiveBlock { //Наша база
     }
     //регестрируем попадаение
     public void hit(Enemy enemy){
-        lastDamageTime = Instant.now();
+        TimeClass.lastAttackTime = Instant.now();
         enemy.life = 0;
         this.life -= enemy.getPower();
+        damage += enemy.getPower();
         if(isFirstArrack) {
-            firstAttackTime = Instant.now();
+            TimeClass.firstAttackTime = Instant.now();
             isFirstArrack = false;
         }
-        if(firstAttackTime!=null){
-            double delta = java.time.Duration.between(firstAttackTime, Instant.now()).toSeconds();
+        if(TimeClass.firstAttackTime!=null){
+            double delta = java.time.Duration.between(TimeClass.firstAttackTime, Instant.now()).toSeconds();
             if(delta>=5){
-                firstAttackTime = null;
+                TimeClass.firstAttackTime = null;
                 isFirstArrack = true;
-                if(damage>=70 && enemy.getLifeBust()>0){
-                    enemy.setLifeBust(enemy.getLifeBust()-1);
+                if(damage >= 70 && BustClass.getBust()>1) {
+                    BustClass.subBust();
+                    TimeClass.lastDamageTime = Instant.now();
                 }
                 damage = 0;
-                return;
             }
-            damage+=enemy.getPower();
         }
     }
 }
