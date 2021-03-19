@@ -1,4 +1,4 @@
-package sample.Player;
+package sample.Util;
 
 import java.io.*;
 import java.util.HashMap;

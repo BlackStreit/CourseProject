@@ -1,4 +1,4 @@
-package sample.Blocks;
+package GameObject.Blocks;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;

@@ -1,4 +1,4 @@
-package sample.Outher;
+package sample.Util;
 
 import java.time.Instant;
 

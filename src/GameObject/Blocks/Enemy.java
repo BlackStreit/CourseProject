@@ -1,10 +1,11 @@
-package sample.Blocks;
+package GameObject.Blocks;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 public class Enemy extends LiveBlock {
     private StarBase starBase;
+    private Path path;
     private int speed = 60;
 
 
@@ -94,9 +95,10 @@ public class Enemy extends LiveBlock {
         }
     }
 
-    public Enemy(double x, double y, StarBase starBase) {
+    public Enemy(double x, double y, StarBase starBase, Path path) {
         super(x, y);
         this.starBase = starBase;
+        this.path = path;
         setMaxLife(30);
     }
 

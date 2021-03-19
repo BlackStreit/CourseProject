@@ -1,4 +1,4 @@
-package sample.Outher;
+package sample.Util;
 
 public class BustClass {
     private static int lifeBust = 1;

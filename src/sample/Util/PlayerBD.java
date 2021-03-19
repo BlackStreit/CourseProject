@@ -1,7 +1,8 @@
-package sample.Player;
+package sample.Util;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import sample.Player.Player;
 
 import java.sql.*;
 
@@ -51,7 +52,7 @@ public class PlayerBD {
     }
 
     private void read(){
-        String sql = "select * from play";
+        String sql = "select * from play \n order by score desc";
         try {
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);

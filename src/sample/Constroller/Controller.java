@@ -4,12 +4,15 @@ package sample.Constroller;
 //
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -17,15 +20,17 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
-import sample.Blocks.*;
-import sample.Outher.BustClass;
-import sample.Outher.TimeClass;
+import GameObject.Blocks.*;
+import sample.Util.BustClass;
+import sample.Util.TimeClass;
 import sample.Player.Player;
-import sample.Player.PlayerBD;
+import sample.Util.PlayerBD;
 
+import java.awt.*;
 import java.net.URL;
 import java.time.Instant;
 import java.util.*;
+import java.util.List;
 import java.util.stream.*;
 
 //Этот интерфейс отвечает за отрисовку
@@ -60,7 +65,7 @@ public class Controller implements Initializable {
     StarBase starBase;
 
     boolean isFirstBust = false;
-
+    private Path[] paths;
     double timeForLastEnemyCreate = 0;
     double enemyCreateLate = 0.5;
     int score = 0;
@@ -134,7 +139,8 @@ public class Controller implements Initializable {
         blocks.add(new TowerPosition(570,160, 14));
         //Финальаня часть
         blocks.add(new TowerPosition(mainCanvas.getWidth() / 2 - 100, mainCanvas.getHeight() / 2 - 100, 15));
-        blocks.add(new Path());
+        paths = new Path[1];
+        blocks.add(paths[0]);
 
     }
 
@@ -210,12 +216,13 @@ public class Controller implements Initializable {
             delta = (double) java.time.Duration.between(TimeClass.lastUpdate, now).toMillis() / 1000;
         }
         double noDamageTime = java.time.Duration.between(TimeClass.lastDamageTime, now).toSeconds();
-        System.out.println("Время до усиления врагов:" + (20 - noDamageTime));
-        if(noDamageTime >= 20){
+        System.out.println("Время до усиления врагов:" + (60 - noDamageTime));
+        if(noDamageTime >= 60){
             TimeClass.lastDamageTime = Instant.now();
             isFirstBust = true;
             BustClass.addBust();
         }
+        int bust = BustClass.getBust();
         System.out.println("Total bust:" + BustClass.getBust());
         generateEnemies(delta); //Генерация врагов
 
@@ -245,43 +252,20 @@ public class Controller implements Initializable {
             timeForLastEnemyCreate += delta;
             return;
         }
-
-        Integer totalEnemyPower = blocks.stream().filter(block -> block instanceof Enemy).
-                map(enemy -> (Enemy) enemy).
-                map(enemy -> enemy.maxLife).
-                reduce(0, Integer::sum);
         Double totalPower = blocks.stream()
                 .filter(block -> block instanceof Tower)
                 .map(block -> (Tower)block)
                 .map(tower -> (1d / tower.fireRate) * tower.power)
                 .reduce(0d, (Double::sum));
+
         int enemyCreateCount = new Random().nextInt(1000);
-        if(totalEnemyPower >= totalPower && enemyCreateCount > 100){
+        if(enemyCreateCount > 100){
             return;
         }
-        //TODO изменить генерацию врагов
-        int enemyMaxLife = ((int)(totalPower - totalEnemyPower));
-        if(enemyMaxLife <= 0){
-            int max = 0;
-            var enemies = blocks.stream()
-                    .filter(enemy -> enemy instanceof Enemy)
-                    .map(enemy -> (Enemy)enemy)
-                    .collect(Collectors.toList());
-            for (var enemy:enemies){
-                if(enemy.maxLife>max){
-                    max = enemy.maxLife;
-                }
-            }
-            enemyMaxLife = max;
-        }
+        int enemyMaxLife = (int) Math.ceil(totalPower * 0.8);
         timeForLastEnemyCreate = 0;
-        Enemy enemy = new Enemy(0, 120, starBase);
-        if(isFirstBust) {
-            enemy.setMaxLife(enemyMaxLife * BustClass.getBust());
-            isFirstBust = false;
-        } else{
-            enemy.setMaxLife(enemyMaxLife);
-        }
+        Enemy enemy = new Enemy(paths[0].getfX(), paths[0].getfY(), starBase, paths[0]);
+        enemy.setMaxLife(enemyMaxLife * BustClass.getBust());
         blocks.add(enemy);
         System.out.println("Создаю врага");
     }
@@ -458,7 +442,6 @@ public class Controller implements Initializable {
         isPlay = true;
         pnlStart.setVisible(false);
         txfName.clear();
-        BustClass.setLifeBust(3);
     }
 
     public void btnExitClick(ActionEvent actionEvent) {

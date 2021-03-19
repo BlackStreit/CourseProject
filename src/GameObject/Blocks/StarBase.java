@@ -1,9 +1,9 @@
-package sample.Blocks;
+package GameObject.Blocks;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import sample.Outher.BustClass;
-import sample.Outher.TimeClass;
+import sample.Util.BustClass;
+import sample.Util.TimeClass;
 
 import java.time.Instant;
 
