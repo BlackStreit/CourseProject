@@ -17,19 +17,16 @@ public class PlayerBD {
         try {
             connection = DriverManager.getConnection(url, name, password);
             System.out.println("Connect to SQL Server");
-            read();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
     }
 
     public ObservableList<Player> getPlayers() {
+        read();
         return players;
     }
 
-    public void setPlayers(ObservableList<Player> players) {
-        this.players = players;
-    }
     public void setPlayers(Player player) {
         players.add(player);
         String sql = "insert play values('"+player.getName()+"', " + player.getScore()+")";
@@ -43,6 +40,7 @@ public class PlayerBD {
             throwables.printStackTrace();
         }
     }
+
     public void closeConnect(){
         try {
             connection.close();

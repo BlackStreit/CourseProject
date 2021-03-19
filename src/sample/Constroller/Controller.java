@@ -1,7 +1,6 @@
 package sample.Constroller;
-//TODO 1)реализовать обратный буст у врагов
-//TODO 2)Отсортировать список игроков
-//
+
+import GameObject.Blocks.*;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
@@ -19,13 +18,12 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
-import GameObject.Blocks.*;
 import sample.Util.BustClass;
+import sample.Util.FileWorkwer;
 import sample.Util.TimeClass;
 import sample.Player.Player;
 import sample.Util.PlayerBD;
 
-import java.awt.*;
 import java.net.URL;
 import java.time.Instant;
 import java.util.*;
@@ -82,6 +80,7 @@ public class Controller implements Initializable {
         );
         btnSetting();
         initBlocks();
+        createPath();
         lblError.setWrapText(true);
         lblError.setTextAlignment(TextAlignment.CENTER);
         timeline.setCycleCount(Timeline.INDEFINITE); //Время действия таймера
@@ -116,31 +115,17 @@ public class Controller implements Initializable {
     private void initBlocks() { //Инициализировать блоки
         starBase = new StarBase(mainCanvas.getWidth() / 2, mainCanvas.getHeight() / 2); //Добавить базу на форму
         blocks.add(starBase); //Добавить в список
-        //Верхняя часть
-        blocks.add(new TowerPosition(100,40, 0));
-        blocks.add(new TowerPosition(300,40, 1));
-        blocks.add(new TowerPosition(500,40, 2));
-        blocks.add(new TowerPosition(700,40, 3));
-        //Правая часть
-        blocks.add(new TowerPosition(700,250, 4));
-        blocks.add(new TowerPosition(700,460, 5));
-        blocks.add(new TowerPosition(700,670, 6));
-        //Нижняя часть
-        blocks.add(new TowerPosition(130,670, 9));
-        blocks.add(new TowerPosition(320,670, 8));
-        blocks.add(new TowerPosition(510,670, 7));
-        //Левая часть
-        blocks.add(new TowerPosition(130,500, 10));
-        blocks.add(new TowerPosition(130,330, 11));
-        blocks.add(new TowerPosition(130,160, 12));
-        //Верх второй уровень
-        blocks.add(new TowerPosition(350,160, 13));
-        blocks.add(new TowerPosition(570,160, 14));
-        //Финальаня часть
-        blocks.add(new TowerPosition(mainCanvas.getWidth() / 2 - 100, mainCanvas.getHeight() / 2 - 100, 15));
-        paths = new Path[1];
-        blocks.add(paths[0] = new Path());
+        var tp = FileWorkwer.readTP("src/GameObject/Levels/LVL1/TP1.bin");
+        blocks.addAll(Arrays.asList(tp));
+    }
 
+    private void createPath(){
+        var arrays = FileWorkwer.readPath("src/GameObject/Levels/LVL1/lvl1.bin");
+        paths = new Path[arrays.length];
+        for(int i = 0; i < arrays.length; i++){
+            paths[i] = new Path(arrays[i].getArrayX(), arrays[i].getArrayY());
+            blocks.add(paths[i]);
+        }
     }
 
     private void onEnemyDestroy(Enemy enemy) {

@@ -1,6 +1,10 @@
 package sample.Util;
 
+import GameObject.Blocks.TowerPosition;
+
 import java.io.*;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class FileWorkwer {
@@ -14,5 +18,50 @@ public class FileWorkwer {
             }
         } catch (IOException ignored){}
         return map;
+    }
+
+    public static GameObject.Blocks.Path[] readPath(String path){
+        GameObject.Blocks.Path[] paths = null;
+        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+            int count = Integer.parseInt(br.readLine());
+            paths = new GameObject.Blocks.Path[count/2];
+            int rows = Integer.parseInt(br.readLine());
+            double[] arr = new double[rows];
+            for (int r = 0; r < count; r++) {
+                for (int i = 0; i < rows; i++){
+                    arr[i] = Double.parseDouble(br.readLine());
+                }
+                paths[r/2] = new GameObject.Blocks.Path();
+                if(r%2==0){
+                    paths[r/2].setArrayX(arr);
+                }
+                else{
+                    paths[r/2].setArrayY(arr);
+                }
+                arr = new double[rows];
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return paths;
+    }
+
+    public static TowerPosition[] readTP(String path){
+        TowerPosition[] arr = null;
+        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+            int count = Integer.parseInt(br.readLine());
+            arr = new TowerPosition[count];
+            for (int i = 0; i < count; i++) {
+                String line = br.readLine();
+                var values = line.split("\\|");
+                double x = Double.parseDouble(values[0]);
+                double y = Double.parseDouble(values[1]);
+                int num = Integer.parseInt(values[2]);
+                arr[i] = new TowerPosition(x, y, num);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return arr;
     }
 }

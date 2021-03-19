@@ -18,7 +18,7 @@ public class Enemy extends LiveBlock {
     }
     @Override
     public void Render(GraphicsContext context) {
-        context.setFill(Color.DARKRED); //Залить Нови
+        context.setFill(Color.DARKRED);
         context.fillOval(
                 x - getRadius() / 2,
                 y - getRadius() / 2,
@@ -30,13 +30,6 @@ public class Enemy extends LiveBlock {
         context.setStroke(Color.RED);
         DrawLife(x-10, y+2 , context);
     }
-
-    boolean isFirst = true;
-    boolean isSecond = false;
-    boolean isTherd = false;
-    boolean isFifth = false;
-    boolean isFiveth = false;
-    boolean isSixth = false;
 
     double totalX = 0;
     double totalY = 0;
@@ -66,8 +59,7 @@ public class Enemy extends LiveBlock {
                                 pounts[i] = false;
                                 pounts[i+1] = true;
                             }
-                        }
-                        else{
+                        } else{
                             x += (speed * delta);
                             if(x >= totalX){
                                 pounts[i] = false;
@@ -82,8 +74,7 @@ public class Enemy extends LiveBlock {
                                 pounts[i] = false;
                                 pounts[i+1] = true;
                             }
-                        }
-                        else{
+                        } else{
                             y += (speed * delta);
                             if(y >= totalY){
                                 pounts[i] = false;
@@ -94,46 +85,6 @@ public class Enemy extends LiveBlock {
                 }
             }
         }
-        /*
-        if(x >= 650 && isFirst){
-            isFirst = false;
-            isSecond = true;
-        }
-        else if(isFirst) {
-            x += speed * delta;
-        }
-        if(y>=620 && isSecond){
-            isSecond = false;
-            isTherd = true;
-        }
-        else if(isSecond){
-            y+=speed*delta;
-        }
-        if(x<=220 && isTherd){
-            isTherd = false;
-            isFifth = true;
-        }
-        else if(isTherd) {
-            x -= speed * delta;
-        }
-        if(y<=240 & isFifth){
-            isFifth = false;
-            isFiveth = true;
-        }
-        else if(isFifth){
-            y-=speed*delta;
-        }
-        if(x>=400 && isFiveth){
-            isFiveth = false;
-            isSixth = true;
-        }
-        else if(isFiveth){
-            x+=speed * delta;
-        }
-        if(isSixth){
-            y+=speed * delta;
-        }
-         */
         double gX = starBase.x - x;
         double gY = starBase.y - y;
         double length = Math.sqrt(gX * gX + gY * gY); //Длина

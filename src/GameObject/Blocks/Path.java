@@ -34,11 +34,27 @@ public class Path extends Block {
         fY = arrayY[0];
     }
 
+    public Path(double[] arrayX, double[] arrayY) {
+        super(0, 0);
+        this.arrayX = arrayX;
+        this.arrayY = arrayY;
+        fX = arrayX[0];
+        fY = arrayY[0];
+    }
+
     @Override
     public void Render(GraphicsContext context) {
         context.setFill(Color.DARKRED);
         context.strokePolyline(arrayX,
                 arrayY,
                 arrayX.length);
+    }
+
+    public void setArrayX(double[] arrayX) {
+        this.arrayX = arrayX;
+    }
+
+    public void setArrayY(double[] arrayY) {
+        this.arrayY = arrayY;
     }
 }
