@@ -7,9 +7,11 @@ public class Enemy extends LiveBlock {
     private StarBase starBase;
     private Path path;
     private int speed = 60;
-
-
+    private boolean[] pounts;
     private int power = 30;
+
+    private double[] pX;
+    private double[] pY;
 
     public int getRadius(){
         return (int)Math.sqrt(maxLife);
@@ -36,11 +38,63 @@ public class Enemy extends LiveBlock {
     boolean isFiveth = false;
     boolean isSixth = false;
 
+    double totalX = 0;
+    double totalY = 0;
+
     @Override
     public void UpdateState(double delta) {
         if(starBase.life <= 0){ //Если база мертва
             return;
         }
+        for(int i = 0; i < pounts.length; i++){
+            boolean selectX = false;
+            boolean selectY = false;
+            if(pounts[i]){
+                if(i != pounts.length - 1){
+                    if(pX[i]!=pX[i+1]){
+                        selectX = true;
+                        totalX = pX[i + 1];
+                    }
+                    if(pY[i]!=pY[i+1]){
+                        selectY = true;
+                        totalY = pY[i + 1];
+                    }
+                    if(selectX){
+                        if(pX[i]>pX[i+1]){
+                            x -= (speed * delta);
+                            if(x <= totalX){
+                                pounts[i] = false;
+                                pounts[i+1] = true;
+                            }
+                        }
+                        else{
+                            x += (speed * delta);
+                            if(x >= totalX){
+                                pounts[i] = false;
+                                pounts[i+1] = true;
+                            }
+                        }
+                    }
+                    if(selectY){
+                        if(pY[i]>pY[i+1]){
+                            y -= (speed * delta);
+                            if(y <= totalY){
+                                pounts[i] = false;
+                                pounts[i+1] = true;
+                            }
+                        }
+                        else{
+                            y += (speed * delta);
+                            if(y >= totalY){
+                                pounts[i] = false;
+                                pounts[i+1] = true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        /*
         if(x >= 650 && isFirst){
             isFirst = false;
             isSecond = true;
@@ -79,16 +133,10 @@ public class Enemy extends LiveBlock {
         if(isSixth){
             y+=speed * delta;
         }
+         */
         double gX = starBase.x - x;
         double gY = starBase.y - y;
         double length = Math.sqrt(gX * gX + gY * gY); //Длина
-        //Нормализованый вектор
-        /*
-        gX /=length;
-        gY /=length;
-        x += gX * speed * delta;
-        y += gY * speed * delta;
-         */
         //Если враг коснулся базы
         if(starBase.radius + getRadius() / 2 > length){
             starBase.hit(this);
@@ -100,6 +148,10 @@ public class Enemy extends LiveBlock {
         this.starBase = starBase;
         this.path = path;
         setMaxLife(30);
+        pounts = new boolean[path.getArrayX().length];
+        pounts[0] = true;
+        pX = path.getArrayX();
+        pY = path.getArrayY();
     }
 
     public int getPower() {

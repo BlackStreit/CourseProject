@@ -6,7 +6,6 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
@@ -82,11 +81,11 @@ public class Controller implements Initializable {
                 )
         );
         btnSetting();
+        initBlocks();
         lblError.setWrapText(true);
         lblError.setTextAlignment(TextAlignment.CENTER);
         timeline.setCycleCount(Timeline.INDEFINITE); //Время действия таймера
         timeline.play(); //Запуск таймера
-        initBlocks();
     }
 
 
@@ -140,7 +139,7 @@ public class Controller implements Initializable {
         //Финальаня часть
         blocks.add(new TowerPosition(mainCanvas.getWidth() / 2 - 100, mainCanvas.getHeight() / 2 - 100, 15));
         paths = new Path[1];
-        blocks.add(paths[0]);
+        blocks.add(paths[0] = new Path());
 
     }
 

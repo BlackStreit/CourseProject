@@ -31,7 +31,7 @@ public class Path extends Block {
         arrayX = new double[]{0, 650, 650, 220, 220, 400, 400};
         arrayY = new double[]{120, 120, 620, 620, 240, 240, 350};
         fX = arrayX[0];
-        fY = arrayX[0];
+        fY = arrayY[0];
     }
 
     @Override
