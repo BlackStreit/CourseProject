@@ -29,8 +29,6 @@ import sample.Player.Player;
 import sample.Util.PlayerBD;
 
 import java.io.File;
-import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Instant;
 import java.util.*;
@@ -60,6 +58,7 @@ public class Controller implements Initializable {
     public AnchorPane paneGameOver;
     public ComboBox<String> cmbLvl = new ComboBox<>();
     public ImageView imgLvl;
+    public ComboBox<String> idLvlFilter = new ComboBox<>();
 
     boolean isBTNClicked;
 
@@ -81,6 +80,8 @@ public class Controller implements Initializable {
 
     String path2lvl = "src/GameObject/Levels/LVL1/lvl1.bin";
     String path2TP = "src/GameObject/Levels/LVL1/TP1.bin";
+
+    String totalLvl;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -106,10 +107,18 @@ public class Controller implements Initializable {
         lvls.add("2 уровень");
         cmbLvl.setItems(lvls);
         cmbLvl.setValue(lvls.get(0));
+        totalLvl = "1 уровень";
 
         File input = new File("src/GameObject/Levels/LVL1/level1.jpg");
         Image image = new Image(input.toURI().toString());
         imgLvl.setImage(image);
+
+        ObservableList<String> lvls1 = FXCollections.observableArrayList();
+        lvls1.add("1 уровень");
+        lvls1.add("2 уровень");
+        lvls1.add("Все уровни");
+        idLvlFilter.setItems(lvls1);
+        idLvlFilter.setValue(lvls1.get(0));
     }
 
     private String getDefaultBTNStyle(){
@@ -136,13 +145,34 @@ public class Controller implements Initializable {
     }
 
     private void initBlocks() { //Инициализировать блоки
+        var starb = blocks.stream()
+                .filter(sb -> sb instanceof StarBase)
+                .map(sb -> (StarBase) sb)
+                .collect(Collectors.toList());
+        if(starb.size()!=0){
+            blocks.removeAll(starb);
+        }
         starBase = new StarBase(paths[0].getlX(), paths[0].getlY()); //Добавить базу на форму
         blocks.add(starBase); //Добавить в список
+        var towerp = blocks.stream()
+                .filter(tp -> tp instanceof TowerPosition)
+                .map(tp -> (TowerPosition) tp)
+                .collect(Collectors.toList());
+        if(towerp.size()!=0){
+            blocks.removeAll(towerp);
+        }
         var tp = FileWorkwer.readTP(path2TP);
         blocks.addAll(Arrays.asList(tp));
     }
 
     private void createPath(){
+        var p = blocks.stream()
+                .filter(pa -> pa instanceof Path)
+                .map(pa -> (Path) pa)
+                .collect(Collectors.toList());
+        if(p.size()!=0){
+            blocks.removeAll(p);
+        }
         var arrays = FileWorkwer.readPath(path2lvl);
 
         paths = new Path[arrays.length];
@@ -184,10 +214,12 @@ public class Controller implements Initializable {
         }
         if(!isTableWrite) {
             player.setScore(score);
+            playerBD.setLevel(totalLvl);
             playerBD.setPlayers(player);
             ColumnPlayer.setCellValueFactory(new PropertyValueFactory<>("name"));
             ColumnScore.setCellValueFactory(new PropertyValueFactory<>("score"));
             tblLeaderBoard.setItems(playerBD.getPlayers());
+            cmbLvl.setValue(totalLvl);
             isTableWrite = true;
         }
     }
@@ -475,16 +507,27 @@ public class Controller implements Initializable {
                 path2lvl = "src/GameObject/Levels/LVL1/lvl1.bin";
                 path2TP = "src/GameObject/Levels/LVL1/TP1.bin";
                 input = new File("src/GameObject/Levels/LVL1/level1.jpg");
+                totalLvl = "1 уровень";
             }
             case "2 уровень"->{
                 path2lvl = "src/GameObject/Levels/LVL2/lvl2.bin";
                 path2TP = "src/GameObject/Levels/LVL2/TP2.bin";
                 input = new File("src/GameObject/Levels/LVL2/level2.jpg");
+                totalLvl = "2 уровень";
             }
         }
         Image image = new Image(input.toURI().toString());
         imgLvl.setImage(image);
         createPath();
         initBlocks();
+        Render();
+    }
+
+    public void idLvlFilterClick(ActionEvent actionEvent) {
+        switch (idLvlFilter.getValue()) {
+            case "1 уровень", "2 уровень" -> tblLeaderBoard.setItems(playerBD.getPlayers("where level = '" + idLvlFilter.getValue() + "'"));
+            default -> tblLeaderBoard.setItems(playerBD.getPlayers(""));
+        }
+
     }
 }

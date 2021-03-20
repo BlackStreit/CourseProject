@@ -38,6 +38,7 @@
                   <Font size="16.0" />
                </font>
             </Button>
+            <ComboBox fx:id="idLvlFilter" layoutX="375.0" layoutY="72.0" onAction="#idLvlFilterClick" prefWidth="150.0" />
          </children>
       </AnchorPane>
       <Button fx:id="btnT1" disable="true" layoutX="800.0" layoutY="240.0" mnemonicParsing="false" onAction="#btnAddTower" prefHeight="95.0" prefWidth="200.0" text="T1" />

@@ -6,9 +6,9 @@ import javafx.scene.paint.Color;
 public class Enemy extends LiveBlock {
     private StarBase starBase;
     private Path path;
-    private int speed = 60;
+    private int speed = 150;
     private boolean[] pounts;
-    private int power = 30;
+    private int power = 1500;
 
     private double[] pX;
     private double[] pY;

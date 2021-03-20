@@ -11,6 +11,12 @@ import java.util.stream.Collectors;
 public class PlayerBD {
     private ObservableList<Player> players = FXCollections.observableArrayList();
     private Connection connection;
+    private String level;
+
+    public void setLevel(String level) {
+        this.level = level;
+    }
+
     public PlayerBD() {
         var map = FileWorkwer.readSQLData();
         String url = map.get("url");
@@ -24,6 +30,11 @@ public class PlayerBD {
         }
     }
 
+    public ObservableList<Player> getPlayers(String sql) {
+        read(sql);
+        return players;
+    }
+
     public ObservableList<Player> getPlayers() {
         read();
         return players;
@@ -31,7 +42,7 @@ public class PlayerBD {
 
     public void setPlayers(Player player) {
         players.add(player);
-        String sql = "insert play values('"+player.getName()+"', " + player.getScore()+")";
+        String sql = "insert play values('"+player.getName()+"', " + player.getScore()+", '" + level + "')";
         try {
             Statement statement = connection.createStatement();
             int rows = statement.executeUpdate(sql);
@@ -51,12 +62,31 @@ public class PlayerBD {
         }
     }
 
-    private void read(){
+    private void read(String sql){
         players = FXCollections.observableArrayList();
-        String sql = "select * from play \n order by score desc" ;
+        String SQl = "select * from play \n" + sql + " \n order by score" ;
         try {
             Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(sql);
+            ResultSet resultSet = statement.executeQuery(SQl);
+            while (resultSet.next()){
+                String name = resultSet.getString("name");
+                int score = resultSet.getInt("score");
+                players.add(new Player(name, score));
+            }
+        }
+        catch (Exception throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
+    private void read(){
+        players = FXCollections.observableArrayList();
+        String SQl = "select * from play \n" +
+                "where level = '"+ level + "' " +
+                "\n order by score \n";
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(SQl);
             while (resultSet.next()){
                 String name = resultSet.getString("name");
                 int score = resultSet.getInt("score");
