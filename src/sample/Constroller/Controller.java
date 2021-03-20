@@ -3,6 +3,8 @@ package sample.Constroller;
 import GameObject.Blocks.*;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
@@ -12,6 +14,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
@@ -24,6 +28,9 @@ import sample.Util.TimeClass;
 import sample.Player.Player;
 import sample.Util.PlayerBD;
 
+import java.io.File;
+import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Instant;
 import java.util.*;
@@ -51,6 +58,8 @@ public class Controller implements Initializable {
     public Button btnExit;
     public Button btnRePlay;
     public AnchorPane paneGameOver;
+    public ComboBox<String> cmbLvl = new ComboBox<>();
+    public ImageView imgLvl;
 
     boolean isBTNClicked;
 
@@ -70,8 +79,12 @@ public class Controller implements Initializable {
 
     ArrayList<Button> buttonArrayList = new ArrayList<>();
 
+    String path2lvl = "src/GameObject/Levels/LVL1/lvl1.bin";
+    String path2TP = "src/GameObject/Levels/LVL1/TP1.bin";
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        setCombos();
         Timeline timeline = new Timeline( //Таймер
                 new KeyFrame(
                         Duration.millis(40), //Частота обновления
@@ -79,15 +92,25 @@ public class Controller implements Initializable {
                 )
         );
         btnSetting();
-        initBlocks();
         createPath();
+        initBlocks();
         lblError.setWrapText(true);
         lblError.setTextAlignment(TextAlignment.CENTER);
         timeline.setCycleCount(Timeline.INDEFINITE); //Время действия таймера
         timeline.play(); //Запуск таймера
     }
 
+    private void setCombos(){
+        ObservableList<String> lvls = FXCollections.observableArrayList();
+        lvls.add("1 уровень");
+        lvls.add("2 уровень");
+        cmbLvl.setItems(lvls);
+        cmbLvl.setValue(lvls.get(0));
 
+        File input = new File("src/GameObject/Levels/LVL1/level1.jpg");
+        Image image = new Image(input.toURI().toString());
+        imgLvl.setImage(image);
+    }
 
     private String getDefaultBTNStyle(){
         return "-fx-background-color: #F5FFFA; -fx-border-width: 1px; -fx-border-color: #000000;";
@@ -113,14 +136,15 @@ public class Controller implements Initializable {
     }
 
     private void initBlocks() { //Инициализировать блоки
-        starBase = new StarBase(mainCanvas.getWidth() / 2, mainCanvas.getHeight() / 2); //Добавить базу на форму
+        starBase = new StarBase(paths[0].getlX(), paths[0].getlY()); //Добавить базу на форму
         blocks.add(starBase); //Добавить в список
-        var tp = FileWorkwer.readTP("src/GameObject/Levels/LVL1/TP1.bin");
+        var tp = FileWorkwer.readTP(path2TP);
         blocks.addAll(Arrays.asList(tp));
     }
 
     private void createPath(){
-        var arrays = FileWorkwer.readPath("src/GameObject/Levels/LVL1/lvl1.bin");
+        var arrays = FileWorkwer.readPath(path2lvl);
+
         paths = new Path[arrays.length];
         for(int i = 0; i < arrays.length; i++){
             paths[i] = new Path(arrays[i].getArrayX(), arrays[i].getArrayY());
@@ -442,5 +466,25 @@ public class Controller implements Initializable {
         money = 50000;
         score = 0;
         isTableWrite = false;
+    }
+
+    public void cmbLvlClick(ActionEvent actionEvent) {
+        File input = null;
+        switch (cmbLvl.getValue()){
+            case "1 уровень"->{
+                path2lvl = "src/GameObject/Levels/LVL1/lvl1.bin";
+                path2TP = "src/GameObject/Levels/LVL1/TP1.bin";
+                input = new File("src/GameObject/Levels/LVL1/level1.jpg");
+            }
+            case "2 уровень"->{
+                path2lvl = "src/GameObject/Levels/LVL2/lvl2.bin";
+                path2TP = "src/GameObject/Levels/LVL2/TP2.bin";
+                input = new File("src/GameObject/Levels/LVL2/level2.jpg");
+            }
+        }
+        Image image = new Image(input.toURI().toString());
+        imgLvl.setImage(image);
+        createPath();
+        initBlocks();
     }
 }

@@ -2,10 +2,12 @@
 
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
@@ -44,23 +46,25 @@
       <Button fx:id="btnT4" disable="true" layoutX="800.0" layoutY="586.0" mnemonicParsing="false" onAction="#btnAddTower" prefHeight="95.0" prefWidth="200.0" text="T4" />
       <Button fx:id="btnDeleteTower" disable="true" layoutX="800.0" layoutY="710.0" mnemonicParsing="false" onAction="#btnDeleteClick" prefHeight="34.0" prefWidth="200.0" text="Удалить башню" />
       <Label fx:id="lblError" layoutX="835.0" layoutY="51.0" onMouseEntered="#lblOnMouseEntered" onMouseExited="#lblOnMouseExited" prefHeight="139.0" prefWidth="130.0" textAlignment="RIGHT" />
-      <AnchorPane fx:id="pnlStart" layoutX="284.0" layoutY="314.0" prefHeight="176.0" prefWidth="232.0" style="-fx-background-color: white; -fx-background-radius: 25;">
+      <AnchorPane fx:id="pnlStart" layoutX="104.0" layoutY="176.0" prefHeight="451.0" prefWidth="593.0" style="-fx-background-color: white; -fx-background-radius: 25;">
          <children>
-            <Button fx:id="bntStart" layoutX="58.0" layoutY="119.0" mnemonicParsing="false" onAction="#bntStartClick" prefHeight="43.0" prefWidth="116.0" text="Начать">
+            <Button fx:id="bntStart" layoutX="73.0" layoutY="256.0" mnemonicParsing="false" onAction="#bntStartClick" prefHeight="43.0" prefWidth="116.0" text="Начать">
                <font>
                   <Font size="15.0" />
                </font>
             </Button>
-            <TextField fx:id="txfName" layoutX="23.0" layoutY="64.0" promptText="Имя">
+            <TextField fx:id="txfName" layoutX="38.0" layoutY="201.0" promptText="Имя">
                <font>
                   <Font size="15.0" />
                </font>
             </TextField>
-            <Label layoutX="71.0" layoutY="15.0" text="Введите имя">
+            <Label layoutX="86.0" layoutY="152.0" text="Введите имя">
                <font>
                   <Font size="15.0" />
                </font>
             </Label>
+            <ComboBox fx:id="cmbLvl" layoutX="308.0" layoutY="50.0" onAction="#cmbLvlClick" prefHeight="25.0" prefWidth="200.0" />
+            <ImageView fx:id="imgLvl" fitHeight="300.0" fitWidth="300.0" layoutX="268.0" layoutY="106.0" pickOnBounds="true" preserveRatio="true" />
          </children>
       </AnchorPane>
    </children>

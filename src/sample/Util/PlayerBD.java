@@ -5,6 +5,8 @@ import javafx.collections.ObservableList;
 import sample.Player.Player;
 
 import java.sql.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 public class PlayerBD {
     private ObservableList<Player> players = FXCollections.observableArrayList();
@@ -50,7 +52,8 @@ public class PlayerBD {
     }
 
     private void read(){
-        String sql = "select * from play \n order by score desc";
+        players = FXCollections.observableArrayList();
+        String sql = "select * from play \n order by score desc" ;
         try {
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
@@ -59,7 +62,8 @@ public class PlayerBD {
                 int score = resultSet.getInt("score");
                 players.add(new Player(name, score));
             }
-        } catch (Exception throwables) {
+        }
+        catch (Exception throwables) {
             throwables.printStackTrace();
         }
     }

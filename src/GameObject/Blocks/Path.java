@@ -3,11 +3,29 @@ package GameObject.Blocks;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
+
 public class Path extends Block {
     private double[] arrayX;
 
     private double fX;
     private double fY;
+
+    private double lX;
+    private double lY;
+
+    public double getlX() {
+        return lX;
+    }
+
+    public double getlY() {
+        return lY;
+    }
+
+    public Path() {
+        super(0, 0);
+    }
 
     public double getfX() {
         return fX;
@@ -26,35 +44,23 @@ public class Path extends Block {
     }
 
     private double[] arrayY;
-    public Path() {
-        super(0, 0);
-        arrayX = new double[]{0, 650, 650, 220, 220, 400, 400};
-        arrayY = new double[]{120, 120, 620, 620, 240, 240, 350};
-        fX = arrayX[0];
-        fY = arrayY[0];
-    }
 
-    public Path(double[] arrayX, double[] arrayY) {
-        super(0, 0);
-        this.arrayX = arrayX;
-        this.arrayY = arrayY;
-        fX = arrayX[0];
-        fY = arrayY[0];
-    }
 
     @Override
     public void Render(GraphicsContext context) {
-        context.setFill(Color.DARKRED);
+        context.setFill(Color.YELLOW);
         context.strokePolyline(arrayX,
                 arrayY,
                 arrayX.length);
     }
 
     public void setArrayX(double[] arrayX) {
-        this.arrayX = arrayX;
+        this.arrayX = new double[arrayX.length];
+        System.arraycopy(arrayX, 0, this.arrayX, 0, arrayX.length);
     }
 
     public void setArrayY(double[] arrayY) {
-        this.arrayY = arrayY;
+        this.arrayY = new double[arrayY.length];
+        System.arraycopy(arrayY, 0, this.arrayY, 0, arrayY.length);
     }
 }
