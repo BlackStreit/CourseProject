@@ -105,6 +105,7 @@ public class Controller implements Initializable {
         ObservableList<String> lvls = FXCollections.observableArrayList();
         lvls.add("1 уровень");
         lvls.add("2 уровень");
+        lvls.add("3 уровень");
         cmbLvl.setItems(lvls);
         cmbLvl.setValue(lvls.get(0));
         totalLvl = "1 уровень";
@@ -113,12 +114,6 @@ public class Controller implements Initializable {
         Image image = new Image(input.toURI().toString());
         imgLvl.setImage(image);
 
-        ObservableList<String> lvls1 = FXCollections.observableArrayList();
-        lvls1.add("1 уровень");
-        lvls1.add("2 уровень");
-        lvls1.add("Все уровни");
-        idLvlFilter.setItems(lvls1);
-        idLvlFilter.setValue(lvls1.get(0));
     }
 
     private String getDefaultBTNStyle(){
@@ -218,8 +213,15 @@ public class Controller implements Initializable {
             playerBD.setPlayers(player);
             ColumnPlayer.setCellValueFactory(new PropertyValueFactory<>("name"));
             ColumnScore.setCellValueFactory(new PropertyValueFactory<>("score"));
-            tblLeaderBoard.setItems(playerBD.getPlayers());
+            tblLeaderBoard.setItems(playerBD.getPlayers("where level = '" + totalLvl +"'"));
             cmbLvl.setValue(totalLvl);
+            ObservableList<String> lvls = FXCollections.observableArrayList();
+            lvls.add("1 уровень");
+            lvls.add("2 уровень");
+            lvls.add("3 уровень");
+            lvls.add("Все уровни");
+            idLvlFilter.setItems(lvls);
+            idLvlFilter.setValue(totalLvl);
             isTableWrite = true;
         }
     }
@@ -233,7 +235,7 @@ public class Controller implements Initializable {
             graphicsContext2D.setLineWidth(1);
         }
         //Нарисовать счет
-        RenderUI(graphicsContext2D);
+        //RenderUI(graphicsContext2D);
     }
 
     private void RenderUI(GraphicsContext graphicsContext2D) {
@@ -304,7 +306,14 @@ public class Controller implements Initializable {
         }
         int enemyMaxLife = (int) Math.ceil(totalPower * 0.8);
         timeForLastEnemyCreate = 0;
-        Enemy enemy = new Enemy(paths[0].getfX(), paths[0].getfY(), starBase, paths[0]);
+        Enemy enemy;
+        if(paths.length == 1) {
+            enemy = new Enemy(paths[0].getfX(), paths[0].getfY(), starBase, paths[0]);
+        }
+        else {
+            int rand = new Random().nextInt(100);
+            enemy = new Enemy(paths[rand%2].getfX(), paths[rand%2].getfY(), starBase, paths[rand%2]);
+        }
         enemy.setMaxLife(enemyMaxLife * BustClass.getBust());
         blocks.add(enemy);
         System.out.println("Создаю врага");
@@ -515,6 +524,12 @@ public class Controller implements Initializable {
                 input = new File("src/GameObject/Levels/LVL2/level2.jpg");
                 totalLvl = "2 уровень";
             }
+            case "3 уровень"->{
+                path2lvl = "src/GameObject/Levels/LVL3/lvl3.bin";
+                path2TP = "src/GameObject/Levels/LVL3/TP3.bin";
+                input = new File("src/GameObject/Levels/LVL3/level3.jpg");
+                totalLvl = "3 уровень";
+            }
         }
         Image image = new Image(input.toURI().toString());
         imgLvl.setImage(image);
@@ -524,8 +539,16 @@ public class Controller implements Initializable {
     }
 
     public void idLvlFilterClick(ActionEvent actionEvent) {
+        lblError.setText("");
         switch (idLvlFilter.getValue()) {
-            case "1 уровень", "2 уровень" -> tblLeaderBoard.setItems(playerBD.getPlayers("where level = '" + idLvlFilter.getValue() + "'"));
+            case "1 уровень", "2 уровень", "3 уровень" -> {
+                var list = playerBD.getPlayers("where level = '" + idLvlFilter.getValue() + "'");
+                if(list.size() == 0){
+                    lblError.setText("На этом уровне еще никто не играл");
+                    return;
+                }
+                tblLeaderBoard.setItems(playerBD.getPlayers("where level = '" + idLvlFilter.getValue() + "'"));
+            }
             default -> tblLeaderBoard.setItems(playerBD.getPlayers(""));
         }
 

@@ -64,7 +64,7 @@ public class PlayerBD {
 
     private void read(String sql){
         players = FXCollections.observableArrayList();
-        String SQl = "select * from play \n" + sql + " \n order by score" ;
+        String SQl = "select * from play \n" + sql + " \n order by score desc" ;
         try {
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(SQl);
@@ -82,8 +82,7 @@ public class PlayerBD {
     private void read(){
         players = FXCollections.observableArrayList();
         String SQl = "select * from play \n" +
-                "where level = '"+ level + "' " +
-                "\n order by score \n";
+                "order by score desc";
         try {
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(SQl);

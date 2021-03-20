@@ -11,6 +11,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
+        var array = FileWorkwer.readPath("src/GameObject/Levels/LVL3/lvl3.bin");
         Parent root = FXMLLoader.load(getClass().getResource("/sample/Scene/sample.fxml"));
         primaryStage.setTitle("Tower Defence");
         primaryStage.setScene(new Scene(root));
