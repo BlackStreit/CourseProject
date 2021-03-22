@@ -46,6 +46,18 @@ public class Path extends Block {
     private double[] arrayY;
 
 
+    public Path(double[] arrayX, double[] arrayY) {
+        super(0, 0);
+        this.arrayX = new double[arrayX.length];
+        System.arraycopy(arrayX, 0, this.arrayX, 0, arrayX.length);
+        this.arrayY = new double[arrayY.length];
+        System.arraycopy(arrayY, 0, this.arrayY, 0, arrayY.length);
+        fX = arrayX[0];
+        fY = arrayY[0];
+        lX = arrayX[arrayX.length - 1];
+        lY = arrayY[arrayX.length - 1];
+    }
+
     @Override
     public void Render(GraphicsContext context) {
         context.setFill(Color.YELLOW);
