@@ -23,7 +23,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 import sample.Util.BustClass;
-import sample.Util.FileWorkwer;
+import sample.Util.FileWorker;
 import sample.Util.TimeClass;
 import sample.Player.Player;
 import sample.Util.PlayerBD;
@@ -156,7 +156,7 @@ public class Controller implements Initializable {
         if(towerp.size()!=0){
             blocks.removeAll(towerp);
         }
-        var tp = FileWorkwer.readTP(path2TP);
+        var tp = FileWorker.readTP(path2TP);
         blocks.addAll(Arrays.asList(tp));
     }
 
@@ -168,7 +168,7 @@ public class Controller implements Initializable {
         if(p.size()!=0){
             blocks.removeAll(p);
         }
-        var arrays = FileWorkwer.readPath(path2lvl);
+        var arrays = FileWorker.readPath(path2lvl);
 
         paths = new Path[arrays.length];
         for(int i = 0; i < arrays.length; i++){

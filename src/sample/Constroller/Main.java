@@ -5,13 +5,13 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import sample.Util.FileWorkwer;
+import sample.Util.FileWorker;
 
 public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        var array = FileWorkwer.readPath("src/GameObject/Levels/LVL3/lvl3.bin");
+        var array = FileWorker.readPath("src/GameObject/Levels/LVL3/lvl3.bin");
         Parent root = FXMLLoader.load(getClass().getResource("/sample/Scene/sample.fxml"));
         primaryStage.setTitle("Tower Defence");
         primaryStage.setScene(new Scene(root));

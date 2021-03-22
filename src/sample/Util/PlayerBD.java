@@ -5,8 +5,6 @@ import javafx.collections.ObservableList;
 import sample.Player.Player;
 
 import java.sql.*;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 public class PlayerBD {
     private ObservableList<Player> players = FXCollections.observableArrayList();
@@ -18,7 +16,7 @@ public class PlayerBD {
     }
 
     public PlayerBD() {
-        var map = FileWorkwer.readSQLData();
+        var map = FileWorker.readSQLData();
         String url = map.get("url");
         String name = map.get("name");
         String password = map.get("password");

@@ -6,7 +6,7 @@ import java.io.*;
 import java.util.HashMap;
 import GameObject.Blocks.*;
 
-public class FileWorkwer {
+public class FileWorker {
     public static HashMap<String, String> readSQLData(){
         HashMap<String, String> map = new HashMap<>();
         try(BufferedReader br = new BufferedReader(new FileReader("sqlDate.txt"))){
@@ -18,34 +18,6 @@ public class FileWorkwer {
         } catch (IOException ignored){}
         return map;
     }
-
-/*
-    public static GameObject.Blocks.Path[] readPath(String path){
-        Path[] paths = null;
-        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
-            int count = Integer.parseInt(br.readLine());
-            paths = new GameObject.Blocks.Path[count/2];
-            int rows = Integer.parseInt(br.readLine());
-            double[] arr = new double[rows];
-            for (int r = 0; r < count; r++) {
-                for (int i = 0; i < rows; i++){
-                    arr[i] = Double.parseDouble(br.readLine());
-                }
-                paths[r/2] = new GameObject.Blocks.Path();
-                if(r%2==0){
-                    paths[r/2].setArrayX(arr);
-                }
-                else{
-                    paths[r/2].setArrayY(arr);
-                }
-                arr = new double[rows];
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return paths;
-    }
- */
 
     public static Path[] readPath(String path){
         Path[] paths = null;
