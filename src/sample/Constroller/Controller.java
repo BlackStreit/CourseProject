@@ -22,12 +22,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
-//import sample.Util.BustClass;
-//import sample.Util.FileWorker;
-//import sample.Util.TimeClass;
-//import sample.Player.Player;
-//import sample.Util.PlayerBD;
-import sample.*;
+import sample.Util.BustClass;
+import sample.Util.FileWorker;
+import sample.Util.TimeClass;
+import sample.Player.Player;
+import sample.Util.PlayerBD;
 
 import java.io.File;
 import java.net.URL;
@@ -60,13 +59,14 @@ public class Controller implements Initializable {
     public ComboBox<String> cmbLvl = new ComboBox<>();
     public ImageView imgLvl;
     public ComboBox<String> idLvlFilter = new ComboBox<>();
+    public Button btnStop;
 
     boolean isBTNClicked;
 
     //Играем ли
     boolean isPlay = false;
     ArrayList<Block> blocks = new ArrayList<>();
-    PlayerBD playerBD = new PlayerBD();
+    PlayerBD playerBD;
     Player player;
     StarBase starBase;
 
@@ -75,7 +75,7 @@ public class Controller implements Initializable {
     double timeForLastEnemyCreate = 0;
     double enemyCreateLate = 0.5;
     int score = 0;
-    double money = 50000;
+    double money = 500;
 
     ArrayList<Button> buttonArrayList = new ArrayList<>();
 
@@ -96,6 +96,7 @@ public class Controller implements Initializable {
         btnSetting();
         createPath();
         initBlocks();
+        playerBD = new PlayerBD();
         lblError.setWrapText(true);
         lblError.setTextAlignment(TextAlignment.CENTER);
         timeline.setCycleCount(Timeline.INDEFINITE); //Время действия таймера
@@ -190,7 +191,6 @@ public class Controller implements Initializable {
             return;
         }
         if(isPlay) {
-            money += 0.1;
             btnT1.setDisable(money < 500);
             btnT2.setDisable(money < 1000);
             btnT3.setDisable(money < 2000);
@@ -224,6 +224,7 @@ public class Controller implements Initializable {
             idLvlFilter.setItems(lvls);
             idLvlFilter.setValue(totalLvl);
             isTableWrite = true;
+            btnStop.setDisable(true);
         }
     }
 
@@ -236,7 +237,7 @@ public class Controller implements Initializable {
             graphicsContext2D.setLineWidth(1);
         }
         //Нарисовать счет
-        //RenderUI(graphicsContext2D);
+        RenderUI(graphicsContext2D);
     }
 
     private void RenderUI(GraphicsContext graphicsContext2D) {
@@ -249,6 +250,7 @@ public class Controller implements Initializable {
     }
 
     void UpdateState(){
+        money += 0.1;
         var towers = blocks.stream()
                 .filter(tower -> tower instanceof Tower)
                 .map(tower -> (Tower)tower)
@@ -492,6 +494,7 @@ public class Controller implements Initializable {
         isPlay = true;
         pnlStart.setVisible(false);
         txfName.clear();
+        btnStop.setDisable(false);
     }
 
     public void btnExitClick(ActionEvent actionEvent) {
@@ -505,9 +508,14 @@ public class Controller implements Initializable {
         blocks.clear();
         initBlocks();
         btnSetting();
-        money = 50000;
+        money = 500;
         score = 0;
         isTableWrite = false;
+        btnStop.setDisable(false);
+        totalLvl = cmbLvl.getValue();
+        createPath();
+        initBlocks();
+        Render();
     }
 
     public void cmbLvlClick(ActionEvent actionEvent) {
@@ -553,5 +561,22 @@ public class Controller implements Initializable {
             default -> tblLeaderBoard.setItems(playerBD.getPlayers(""));
         }
 
+    }
+
+    public void btnStopClick(ActionEvent actionEvent) {
+        if(isPlay){
+            isPlay = false;
+            for (var btn : buttonArrayList){
+                btn.setDisable(true);
+            }
+            lblError.setText("Игра на паузе");
+        }
+        else{
+            isPlay = true;
+            for (var btn : buttonArrayList){
+                btn.setDisable(false);
+            }
+            lblError.setText("");
+        }
     }
 }

@@ -24,8 +24,8 @@
             </Label>
             <TableView fx:id="tblLeaderBoard" editable="true" layoutX="39.0" layoutY="50.0" prefHeight="423.0" prefWidth="200.0">
               <columns>
-                <TableColumn fx:id="ColumnPlayer" prefWidth="100.0" text="Player" />
-                <TableColumn fx:id="ColumnScore" prefWidth="100.0" text="Score" />
+                <TableColumn fx:id="ColumnPlayer" maxWidth="100.0" minWidth="100.0" prefWidth="100.0" text="Player" />
+                <TableColumn fx:id="ColumnScore" maxWidth="100.0" minWidth="100.0" prefWidth="100.0" text="Score" />
               </columns>
             </TableView>
             <Button fx:id="btnExit" layoutX="454.0" layoutY="316.0" mnemonicParsing="false" onAction="#btnExitClick" prefHeight="52.0" prefWidth="141.0" text="Выйти из игры" wrapText="true">
@@ -68,5 +68,6 @@
             <ImageView fx:id="imgLvl" fitHeight="300.0" fitWidth="300.0" layoutX="268.0" layoutY="106.0" pickOnBounds="true" preserveRatio="true" />
          </children>
       </AnchorPane>
+      <Button fx:id="btnStop" disable="true" layoutX="800.0" layoutY="30.0" mnemonicParsing="false" onAction="#btnStopClick" prefHeight="43.0" prefWidth="53.0" text="Пауза" />
    </children>
 </Pane>
