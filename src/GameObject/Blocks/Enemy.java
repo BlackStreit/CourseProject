@@ -8,7 +8,7 @@ public class Enemy extends LiveBlock {
     private Path path;
     private int speed = 60;
     private boolean[] pounts;
-    private int power = 1500;
+    private int power = 30;
 
     private double[] pX;
     private double[] pY;
@@ -89,7 +89,7 @@ public class Enemy extends LiveBlock {
         double gY = starBase.y - y;
         double length = Math.sqrt(gX * gX + gY * gY); //Длина
         //Если враг коснулся базы
-        if(starBase.radius + getRadius() / 2 > length){
+        if(starBase.getRadius() + getRadius() / 2 > length){
             starBase.hit(this);
         }
     }

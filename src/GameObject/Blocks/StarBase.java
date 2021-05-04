@@ -10,7 +10,16 @@ import java.time.Instant;
 public class StarBase extends LiveBlock { //Наша база
 
     private boolean isFirstArrack = true;
-    public int radius = 50; //Радиус базы
+
+    public int getRadius() {
+        return radius;
+    }
+
+    public void setRadius(int radius) {
+        this.radius = radius;
+    }
+
+    private int radius = 50; //Радиус базы
     private int damage = 0;
 
     public StarBase(double x, double y) {

@@ -9,12 +9,77 @@ import java.util.function.Consumer;
 
 public class Tower extends LiveBlock {
     private ArrayList<Block> blocks;
-    public int radius = 100; //Радиус выстрела
-    public double fireRate = 0.1; //Частоты выстрела
-    public double timeForLastShot = 0;
+    private int radius = 100; //Радиус выстрела
+    private double fireRate = 0.1; //Частоты выстрела
+    private double timeForLastShot = 0;
     private Enemy targetEnemy;
-    public int power = 25;
-    public Color color = Color.WHITE;
+    private int power = 25;
+
+    public ArrayList<Block> getBlocks() {
+        return blocks;
+    }
+
+    public void setBlocks(ArrayList<Block> blocks) {
+        this.blocks = blocks;
+    }
+
+    public int getRadius() {
+        return radius;
+    }
+
+    public void setRadius(int radius) {
+        this.radius = radius;
+    }
+
+    public double getFireRate() {
+        return fireRate;
+    }
+
+    public void setFireRate(double fireRate) {
+        this.fireRate = fireRate;
+    }
+
+    public double getTimeForLastShot() {
+        return timeForLastShot;
+    }
+
+    public void setTimeForLastShot(double timeForLastShot) {
+        this.timeForLastShot = timeForLastShot;
+    }
+
+    public Enemy getTargetEnemy() {
+        return targetEnemy;
+    }
+
+    public void setTargetEnemy(Enemy targetEnemy) {
+        this.targetEnemy = targetEnemy;
+    }
+
+    public int getPower() {
+        return power;
+    }
+
+    public void setPower(int power) {
+        this.power = power;
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
+    }
+
+    public Consumer<Enemy> getOnEnemyDestroy() {
+        return onEnemyDestroy;
+    }
+
+    public void setOnEnemyDestroy(Consumer<Enemy> onEnemyDestroy) {
+        this.onEnemyDestroy = onEnemyDestroy;
+    }
+
+    private Color color = Color.WHITE;
 
 
     public int getNumber() {

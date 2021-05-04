@@ -181,12 +181,12 @@ public class Controller implements Initializable {
 
     private void onEnemyDestroy(Enemy enemy) {
         System.out.println("Враг убит");
-        score+= enemy.maxLife / 5;
-        money+=enemy.maxLife*1.2;
+        score+= enemy.getMaxLife() / 5;
+        money+=enemy.getMaxLife()*1.2;
     }
 
     private void onTimerTick(ActionEvent actionEvent) { // Действие во время тика
-        if(starBase.life<=0){
+        if(starBase.getLife()<=0){
             gameOver();
             return;
         }
@@ -278,7 +278,7 @@ public class Controller implements Initializable {
         List<LiveBlock> blocksToRemove = blocks.stream(). //запустили процесс
                 filter(block -> block instanceof LiveBlock). //фильтр на поиск живых блоков
                 map(block -> ((LiveBlock) block)). // приведение блоков
-                filter(liveBlock -> liveBlock.life <= 0). //ВЫборка живых блоков
+                filter(liveBlock -> liveBlock.getLife() <= 0). //ВЫборка живых блоков
                 collect(Collectors.toList()); //Все что совпало в лист
         blocks.removeAll(blocksToRemove); //Удалить мертвые блоки
         TimeClass.lastUpdate = now;
@@ -300,7 +300,7 @@ public class Controller implements Initializable {
         Double totalPower = blocks.stream()
                 .filter(block -> block instanceof Tower)
                 .map(block -> (Tower)block)
-                .map(tower -> (1d / tower.fireRate) * tower.power)
+                .map(tower -> (1d / tower.getFireRate()) * tower.getPower())
                 .reduce(0d, (Double::sum));
 
         int enemyCreateCount = new Random().nextInt(1000);
@@ -336,20 +336,20 @@ public class Controller implements Initializable {
                 .map(position -> (TowerPosition) position)
                 .collect(Collectors.toList());
         for (var position : positions) {
-            if((mouseY >= position.y && mouseY <= position.y + 20) && (mouseX >= position.x&&mouseX <= position.x + 20)) {
+            if((mouseY >= position.getY() && mouseY <= position.getY() + 20) && (mouseX >= position.getX()&&mouseX <= position.getX() + 20)) {
                 System.out.println("Установка");
                 if (position.isFreedoom()) {
                     money -= cost;
                     Tower tower = new Tower(
-                            position.x + 10,
-                            position.y + 10,
+                            position.getX() + 10,
+                            position.getY() + 10,
                             blocks,
                             this::onEnemyDestroy,
                             position.getNumber());
-                    tower.fireRate = fireRate;
-                    tower.radius = radius;
-                    tower.power = damage;
-                    tower.color = color;
+                    tower.setFireRate(fireRate);
+                    tower.setRadius(radius);
+                    tower.setPower(damage);
+                    tower.setColor(color);
                     blocks.add(tower);
                     btn.setStyle(getDefaultBTNStyle());
                     isBTNClicked = false;
@@ -429,10 +429,10 @@ public class Controller implements Initializable {
                 .map(tower -> (Tower) tower)
                 .collect(Collectors.toList());
         for (var tower: towers) {
-            double gX = tower.x - x;
-            double gY = tower.y - y;
+            double gX = tower.getX() - x;
+            double gY = tower.getY() - y;
             double length = Math.sqrt(gX * gX + gY * gY);
-            if((double)(tower.radius / 6) > length){
+            if((double)(tower.getRadius() / 6) > length){
                 var positions = blocks.stream()
                         .filter(pos -> pos instanceof TowerPosition)
                         .map(pos -> (TowerPosition)pos)
@@ -442,7 +442,7 @@ public class Controller implements Initializable {
                 positions.get(0).setFreedoom(true);
                 blocks.remove(tower);
                 isDelete = true;
-                money += tower.power * 5;
+                money += tower.getPower() * 5;
             }
         }
         if(!isDelete) {

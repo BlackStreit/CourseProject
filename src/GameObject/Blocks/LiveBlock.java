@@ -5,8 +5,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
 public class LiveBlock extends Block { //Живой блок
-    public int life;
-    public int maxLife;
+    protected int life;
+    protected int maxLife;
 
     public LiveBlock(double x, double y) {
         super(x, y);
