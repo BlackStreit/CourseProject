@@ -32,12 +32,7 @@ public class PlayerBD {
         read(sql);
         return players;
     }
-
-    public ObservableList<Player> getPlayers() {
-        read();
-        return players;
-    }
-
+    //Добавить даные в БД
     public void setPlayers(Player player) {
         players.add(player);
         String sql = "insert play values('"+player.getName()+"', " + player.getScore()+", '" + level + "')";
@@ -51,7 +46,7 @@ public class PlayerBD {
             throwables.printStackTrace();
         }
     }
-
+    //Разорвать соединений
     public void closeConnect(){
         try {
             connection.close();
@@ -59,7 +54,7 @@ public class PlayerBD {
             throwables.printStackTrace();
         }
     }
-
+    //Считать данные из бд
     private void read(String sql){
         players = FXCollections.observableArrayList();
         String SQl = "select * from play \n" + sql + " \n order by score desc" ;
@@ -76,23 +71,4 @@ public class PlayerBD {
             throwables.printStackTrace();
         }
     }
-
-    private void read(){
-        players = FXCollections.observableArrayList();
-        String SQl = "select * from play \n" +
-                "order by score desc";
-        try {
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(SQl);
-            while (resultSet.next()){
-                String name = resultSet.getString("name");
-                int score = resultSet.getInt("score");
-                players.add(new Player(name, score));
-            }
-        }
-        catch (Exception throwables) {
-            throwables.printStackTrace();
-        }
-    }
-
 }

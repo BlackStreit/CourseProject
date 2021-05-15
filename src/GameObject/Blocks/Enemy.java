@@ -39,6 +39,7 @@ public class Enemy extends LiveBlock {
         if(starBase.life <= 0){ //Если база мертва
             return;
         }
+        //Перебор состяоний для опеределния движения
         for(int i = 0; i < pounts.length; i++){
             boolean selectX = false;
             boolean selectY = false;

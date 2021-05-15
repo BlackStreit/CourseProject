@@ -102,8 +102,9 @@ public class Controller implements Initializable {
         timeline.setCycleCount(Timeline.INDEFINITE); //Время действия таймера
         timeline.play(); //Запуск таймера
     }
-
+    //Заполнить комбоокы значениями
     private void setCombos(){
+        //заполнить уровни
         ObservableList<String> lvls = FXCollections.observableArrayList();
         lvls.add("1 уровень");
         lvls.add("2 уровень");
@@ -111,21 +112,21 @@ public class Controller implements Initializable {
         cmbLvl.setItems(lvls);
         cmbLvl.setValue(lvls.get(0));
         totalLvl = "1 уровень";
-
+        //Прочитать 1 уровень
         File input = new File("src/GameObject/Levels/LVL1/level1.jpg");
         Image image = new Image(input.toURI().toString());
         imgLvl.setImage(image);
 
     }
-
+    //Стиль для обычной кнопки
     private String getDefaultBTNStyle(){
         return "-fx-background-color: #F5FFFA; -fx-border-width: 1px; -fx-border-color: #000000;";
     }
-
+    //Стиль кнопки для нажатой кнопки
     private String getClickedBTNStyle(){
         return "-fx-background-color: #C0C0C0; -fx-border-width: 1px; -fx-border-color: #000000;";
     }
-
+    //Настрока кнопок и установка стилей
     private void btnSetting(){
         btnT1.setText("Цена:500\nУрон:10\nСкорость атаки:0.1\nРадиус:100");
         buttonArrayList.add(btnT1);
@@ -140,8 +141,8 @@ public class Controller implements Initializable {
             button.setStyle(getDefaultBTNStyle());
         }
     }
-
     private void initBlocks() { //Инициализировать блоки
+        //Если в списке уже есть база, удалить
         var starb = blocks.stream()
                 .filter(sb -> sb instanceof StarBase)
                 .map(sb -> (StarBase) sb)
@@ -149,8 +150,10 @@ public class Controller implements Initializable {
         if(starb.size()!=0){
             blocks.removeAll(starb);
         }
+        //Создать новую базу
         starBase = new StarBase(paths[0].getlX(), paths[0].getlY()); //Добавить базу на форму
         blocks.add(starBase); //Добавить в список
+        //Удалить все башни
         var towerp = blocks.stream()
                 .filter(tp -> tp instanceof TowerPosition)
                 .map(tp -> (TowerPosition) tp)
@@ -158,11 +161,13 @@ public class Controller implements Initializable {
         if(towerp.size()!=0){
             blocks.removeAll(towerp);
         }
+        //Добавить позиции для башен
         var tp = FileWorker.readTP(path2TP);
         blocks.addAll(Arrays.asList(tp));
     }
-
+    //Построить маршрут для крипов
     private void createPath(){
+        //Удалить все предыдущие пути
         var p = blocks.stream()
                 .filter(pa -> pa instanceof Path)
                 .map(pa -> (Path) pa)
@@ -170,15 +175,16 @@ public class Controller implements Initializable {
         if(p.size()!=0){
             blocks.removeAll(p);
         }
+        //Прочитать путь из файла
         var arrays = FileWorker.readPath(path2lvl);
-
+        //Инициализировать путь
         paths = new Path[arrays.length];
         for(int i = 0; i < arrays.length; i++){
             paths[i] = new Path(arrays[i].getArrayX(), arrays[i].getArrayY());
             blocks.add(paths[i]);
         }
     }
-
+    //Событие вызываемое при смерти врага
     private void onEnemyDestroy(Enemy enemy) {
         System.out.println("Враг убит");
         score+= enemy.getMaxLife() / 5;
@@ -186,28 +192,37 @@ public class Controller implements Initializable {
     }
 
     private void onTimerTick(ActionEvent actionEvent) { // Действие во время тика
+        //Если у базы нет HP
         if(starBase.getLife()<=0){
             gameOver();
             return;
         }
+        //Если играем
         if(isPlay) {
+            //Изменение состояние кнопки
             btnT1.setDisable(money < 500);
             btnT2.setDisable(money < 1000);
             btnT3.setDisable(money < 2000);
             btnT4.setDisable(money < 5000);
+            //Обновить состояние объектов игры
             UpdateState();
         }
+        //Перерисовать объекты
         Render();
     }
 
     boolean isTableWrite = false;
 
+    //Собтиые вызываемое при окончании игры
     private void gameOver() {
+        //Показать панель окончания игры
         paneGameOver.setVisible(true);
         isPlay = false;
+        //Выключить все кнопки
         for (var button: buttonArrayList) {
             button.setDisable(true);
         }
+        //Если данные из таблицы не было заполнены
         if(!isTableWrite) {
             player.setScore(score);
             playerBD.setLevel(totalLvl);
@@ -227,7 +242,7 @@ public class Controller implements Initializable {
             btnStop.setDisable(true);
         }
     }
-
+    //Событие для отрисовки
     void Render(){
         GraphicsContext graphicsContext2D = mainCanvas.getGraphicsContext2D(); //С помощью этого мы рисуем
         graphicsContext2D.setFill(Color.BLACK); //Залить задник
@@ -239,7 +254,7 @@ public class Controller implements Initializable {
         //Нарисовать счет
         RenderUI(graphicsContext2D);
     }
-
+    //Прописока денег и счета
     private void RenderUI(GraphicsContext graphicsContext2D) {
         graphicsContext2D.setFill(Color.GREEN);
         graphicsContext2D.setFont(Font.font("Verdana", 16));
@@ -248,13 +263,10 @@ public class Controller implements Initializable {
         graphicsContext2D.fillText(String.format("money: %s", (int)money),
                 150, 20);
     }
-
+    //Обновить состояние объектов
     void UpdateState(){
+        //Кол-вол денег
         money += 0.1;
-        var towers = blocks.stream()
-                .filter(tower -> tower instanceof Tower)
-                .map(tower -> (Tower)tower)
-                .collect(Collectors.toList());
         Instant now = Instant.now();
         double delta = 0;//Колво секунд с последнего обновления
         if(TimeClass.lastUpdate != null){
@@ -262,12 +274,12 @@ public class Controller implements Initializable {
         }
         double noDamageTime = java.time.Duration.between(TimeClass.lastDamageTime, now).toSeconds();
         System.out.println("Время до усиления врагов:" + (60 - noDamageTime));
+        //Усилить врагов, если урона не было 60 секунд
         if(noDamageTime >= 60){
             TimeClass.lastDamageTime = Instant.now();
             isFirstBust = true;
             BustClass.addBust();
         }
-        int bust = BustClass.getBust();
         System.out.println("Total bust:" + BustClass.getBust());
         generateEnemies(delta); //Генерация врагов
 
@@ -283,8 +295,9 @@ public class Controller implements Initializable {
         blocks.removeAll(blocksToRemove); //Удалить мертвые блоки
         TimeClass.lastUpdate = now;
     }
-
+    //Создать врагов
     private void generateEnemies(double delta) {
+        //Не создавать, если нет башен
         var towers = blocks.stream()
                 .filter(tower -> tower instanceof Tower)
                 .map(tower -> (Tower)tower)
@@ -292,24 +305,28 @@ public class Controller implements Initializable {
         if(towers.size() == 0){
             return;
         }
-
+        //Если не прошло интервала генерации, то не создавать
         if(timeForLastEnemyCreate < enemyCreateLate){
             timeForLastEnemyCreate += delta;
             return;
         }
+        //Узнать текущую силу башен
         Double totalPower = blocks.stream()
                 .filter(block -> block instanceof Tower)
                 .map(block -> (Tower)block)
                 .map(tower -> (1d / tower.getFireRate()) * tower.getPower())
                 .reduce(0d, (Double::sum));
-
+        //Получить слуайное значение от 0 до 1000
         int enemyCreateCount = new Random().nextInt(1000);
+        //Если значение больше 100 не создаем
         if(enemyCreateCount > 100){
             return;
         }
-        int enemyMaxLife = (int) Math.ceil(totalPower * 0.8);
+        //Поучить макс HP крипов
+        int enemyMaxLife = (int) Math.ceil(totalPower * 0.9);
         timeForLastEnemyCreate = 0;
         Enemy enemy;
+        //Содать врага
         if(paths.length == 1) {
             enemy = new Enemy(paths[0].getfX(), paths[0].getfY(), starBase, paths[0]);
         }
@@ -321,8 +338,8 @@ public class Controller implements Initializable {
         blocks.add(enemy);
         System.out.println("Создаю врага");
     }
-
-    public void addTower(int cost, int damage, double fireRate, int radius, Color color, Button btn) {
+    //Метод для добавления башни
+    private void addTower(int cost, int damage, double fireRate, int radius, Color color, Button btn) {
         if(!isBTNClicked){
             return;
         }
@@ -335,6 +352,7 @@ public class Controller implements Initializable {
         var positions = blocks.stream().filter(position -> position instanceof TowerPosition)
                 .map(position -> (TowerPosition) position)
                 .collect(Collectors.toList());
+        //Поиск нужной позиции для добавления
         for (var position : positions) {
             if((mouseY >= position.getY() && mouseY <= position.getY() + 20) && (mouseX >= position.getX()&&mouseX <= position.getX() + 20)) {
                 System.out.println("Установка");
@@ -364,7 +382,7 @@ public class Controller implements Initializable {
         }
         lblError.setText("Вы не выбрали площадку, повторите попытку");
     }
-
+    //Событие вызываемое при попытке добавить башню
     public void btnAddTower(ActionEvent actionEvent) {
         Button btn = (Button)actionEvent.getTarget();
         lblError.setText("");
@@ -374,6 +392,7 @@ public class Controller implements Initializable {
         isBTNClicked = true;
         btn.setStyle(getClickedBTNStyle());
         System.out.println(btn.getId());
+        //Выбор типа башни
         switch (btn.getId()) {
             case "btnT1" -> {
                 btn.setStyle(getClickedBTNStyle());
@@ -409,7 +428,7 @@ public class Controller implements Initializable {
             }
         }
     }
-
+    //Собтиые для удаления башни
     public void btnDeleteClick(ActionEvent actionEvent) {
         if (isActionsBtn((Button) actionEvent.getTarget())){
             return;
@@ -419,6 +438,7 @@ public class Controller implements Initializable {
         btnDeleteTower.setStyle(getClickedBTNStyle());
         mainCanvas.setOnMousePressed(mouseEvent -> deleteTower(mouseEvent.getX(), mouseEvent.getY(), btnDeleteTower));
     }
+    //Удаление башни
     void deleteTower(double x, double y, Button btn){
         if(!isBTNClicked){
             return;
@@ -460,7 +480,7 @@ public class Controller implements Initializable {
         lblError.setScaleX(1);
         lblError.setScaleY(1);
     }
-
+    //Метод проверяющий нажатость кнопки
     private boolean isActionsBtn(Button btn){
         var towers = blocks.stream().
                 filter(tower -> tower instanceof Tower).
@@ -483,7 +503,7 @@ public class Controller implements Initializable {
         }
         return false;
     }
-
+    //Собтиые при начале игры
     public void bntStartClick(ActionEvent actionEvent) {
         if(txfName.getText().equals("")){
             lblError.setText("Для начала игры введите ваше имя");
@@ -496,12 +516,12 @@ public class Controller implements Initializable {
         txfName.clear();
         btnStop.setDisable(false);
     }
-
+    //Собтиые при закрытии игры
     public void btnExitClick(ActionEvent actionEvent) {
         playerBD.closeConnect();
         System.exit(-1);
     }
-
+    //Событие для переигровки
     public void btnRePlayClick(ActionEvent actionEvent) {
         pnlStart.setVisible(true);
         paneGameOver.setVisible(false);
@@ -517,7 +537,7 @@ public class Controller implements Initializable {
         initBlocks();
         Render();
     }
-
+    //Соббтиые при изменении уровня игры
     public void cmbLvlClick(ActionEvent actionEvent) {
         File input = null;
         switch (cmbLvl.getValue()){
@@ -546,7 +566,7 @@ public class Controller implements Initializable {
         initBlocks();
         Render();
     }
-
+    //Событие для изменения уровня в таблице илдеров
     public void idLvlFilterClick(ActionEvent actionEvent) {
         lblError.setText("");
         switch (idLvlFilter.getValue()) {
@@ -562,7 +582,7 @@ public class Controller implements Initializable {
         }
 
     }
-
+    //Событие при паузе
     public void btnStopClick(ActionEvent actionEvent) {
         if(isPlay){
             isPlay = false;

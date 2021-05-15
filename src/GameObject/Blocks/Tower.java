@@ -90,7 +90,7 @@ public class Tower extends LiveBlock {
         this.number = number;
     }
 
-    public int number;
+    private int number;
 
     Consumer<Enemy> onEnemyDestroy = null;
     public Tower(double x, double y, ArrayList<Block> blocks, Consumer<Enemy> onEnemyDestroy, int number) {

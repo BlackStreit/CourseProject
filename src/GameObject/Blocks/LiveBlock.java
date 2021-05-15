@@ -28,7 +28,7 @@ public class LiveBlock extends Block { //Живой блок
         this.maxLife = maxLife;
         this.life = maxLife;
     }
-
+    //Нарисовать жизни
     public void DrawLife(double x, double y, GraphicsContext graphicsContextk){ //Полоска жизней
         graphicsContextk.setFill(Color.WHITE);
         graphicsContextk.setFont(Font.font("Verdana", 14));

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import GameObject.Blocks.*;
 
 public class FileWorker {
+    //Прочитать данные для бд из файла
     public static HashMap<String, String> readSQLData(){
         HashMap<String, String> map = new HashMap<>();
         try(BufferedReader br = new BufferedReader(new FileReader("sqlDate.txt"))){
@@ -18,7 +19,7 @@ public class FileWorker {
         } catch (IOException ignored){}
         return map;
     }
-
+    //Прочитать пути из файла
     public static Path[] readPath(String path){
         Path[] paths = null;
         try (BufferedReader br = new BufferedReader(new FileReader(path))) {
@@ -44,7 +45,7 @@ public class FileWorker {
         }
         return paths;
     }
-
+    //Прочитать данные для путей из файла
     public static TowerPosition[] readTP(String path){
         TowerPosition[] arr = null;
         try (BufferedReader br = new BufferedReader(new FileReader(path))) {
